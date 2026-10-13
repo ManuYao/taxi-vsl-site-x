@@ -1,0 +1,406 @@
+<title>Maquette Espace Chauffeur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Sora:wght@600;700;800&display=swap">
+<style>
+/* Layout : planche de 6 écrans de téléphone (non cliquables) avec légende, puis les effets sur le site public.
+   Même univers que le site : vert forêt, Sora, Atkinson Hyperlegible. Chiffres d'exemple. */
+:root {
+  color-scheme: light;
+  --pri: #1E5B43; --pri-hover: #164633; --dark: #0F241C; --soft: #E4EFE8; --soft2: #C7DECF;
+  --bg: #F6F7F5; --paper: #FFFFFF; --ink: #141819; --muted: #5A6366; --line: #E2E6E3;
+  --page: #E8ECE9; --tbd: #8A5A00; --ok: #1E7A45; --warn: #B26A00; --warn-soft: #FFF1D6; --err: #B3261E;
+  --display: "Sora", "Trebuchet MS", Arial, sans-serif; --body: "Atkinson Hyperlegible", Verdana, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5; }
+h1, h2, h3 { font-family: var(--display); margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+.container { max-width: 1240px; margin-inline: auto; padding-inline: 16px; }
+@media (min-width: 720px) { .container { padding-inline: 32px; } }
+.tbd { color: var(--tbd); text-decoration: underline dashed 1.5px; text-underline-offset: 3px; }
+.eyebrow { font-size: 14px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--pri); }
+
+.hero { background: var(--dark); color: #FFFFFF; padding-block: 48px 40px; }
+.hero .eyebrow { color: var(--soft2); }
+.hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.05; font-weight: 800; margin-top: 8px; max-width: 18ch; }
+.hero p { color: #B9C4BF; max-width: 58ch; margin: 14px 0 0; font-size: 19px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.pill { background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 14px; font-size: 15px; }
+
+.board { padding-block: 56px 24px; display: grid; gap: 56px 28px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); justify-items: center; }
+.item { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; max-width: 330px; }
+.cap { text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.cap b { font-family: var(--display); font-size: 20px; }
+.cap span { color: var(--muted); font-size: 16px; }
+.cap .k { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--pri); }
+
+/* Téléphone */
+.phone { width: 310px; max-width: 100%; border-radius: 46px; background: #070C0A; padding: 10px; box-shadow: 0 0 0 2px #2B3531, 0 40px 60px -34px rgba(15,36,28,.7); pointer-events: none; user-select: none; }
+.screen { position: relative; border-radius: 37px; background: var(--bg); height: 780px; display: flex; flex-direction: column; overflow: hidden; }
+.sbar { display: flex; justify-content: space-between; padding: 12px 24px 0; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.apptop { padding: 8px 16px 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.apptop h3 { font-size: 22px; }
+.apptop small { color: var(--muted); font-size: 13px; display: block; font-family: var(--body); font-weight: 400; letter-spacing: 0; }
+.body { flex: 1; padding: 6px 14px 12px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+svg.ic { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.nav { display: grid; grid-template-columns: repeat(4, 1fr); background: #FFFFFF; border-top: 1px solid var(--line); padding: 6px 4px 14px; }
+.nav div { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11.5px; font-weight: 700; color: var(--muted); padding: 4px 0; }
+.nav div.on { color: var(--pri); }
+.nav .ic { width: 24px; height: 24px; }
+
+/* Composants */
+.card { background: #FFFFFF; border-radius: 18px; padding: 14px; box-shadow: 0 8px 20px -16px rgba(15,25,20,.6); display: flex; flex-direction: column; gap: 8px; }
+.status { background: var(--pri); color: #FFFFFF; border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.status b { font-family: var(--display); font-size: 19px; display: block; line-height: 1.2; }
+.status span { font-size: 14px; opacity: .85; }
+.sw { width: 52px; height: 30px; border-radius: 15px; background: rgba(255,255,255,.3); position: relative; flex: none; }
+.sw::after { content: ""; position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; }
+.sw.off { background: #B8BFBC; } .sw.off::after { right: auto; left: 3px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.kpi { background: #FFFFFF; border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 2px; }
+.kpi small { color: var(--muted); font-size: 12.5px; line-height: 1.2; }
+.kpi b { font-family: var(--display); font-size: 21px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpi.hl { background: var(--soft); } .kpi.hl b { color: var(--pri); }
+.kpi.todo { background: var(--warn-soft); } .kpi.todo b { color: var(--warn); }
+.row-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.row-h b { font-family: var(--display); font-size: 15px; }
+.row-h span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; height: 96px; }
+.bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; font-size: 12px; color: var(--muted); }
+.bar i { display: block; width: 100%; border-radius: 6px 6px 3px 3px; background: var(--soft2); }
+.bar.today i { background: var(--pri); }
+.bar.today { color: var(--ink); font-weight: 700; }
+.bar em { font-style: normal; font-size: 11px; font-weight: 700; color: var(--pri); font-variant-numeric: tabular-nums; }
+.next { display: flex; gap: 12px; align-items: center; }
+.next .t { font-family: var(--display); font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; }
+.next .r { font-weight: 700; font-size: 15px; line-height: 1.25; }
+.next .m { color: var(--muted); font-size: 13px; }
+.tag { display: inline-block; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 2px 9px; background: var(--soft); color: var(--pri); white-space: nowrap; }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.tag.dark { background: var(--pri); color: #FFFFFF; }
+.course { background: #FFFFFF; border-radius: 16px; padding: 12px 14px; display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; align-items: center; }
+.course .t { font-family: var(--display); font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; }
+.course .r { font-weight: 700; font-size: 14px; line-height: 1.25; }
+.course .m { font-size: 12.5px; color: var(--muted); }
+.course .p { font-family: var(--display); font-weight: 700; font-size: 15px; text-align: right; font-variant-numeric: tabular-nums; }
+.course.cur { grid-template-columns: 1fr; border: 2px solid var(--pri); gap: 8px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 14px; font-weight: 700; font-size: 16px; background: var(--pri); color: #FFFFFF; }
+.btn.line { background: #FFFFFF; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.btn.soft { background: var(--soft); color: var(--pri); }
+.seg { display: grid; background: #E9EDEA; border-radius: 14px; padding: 3px; gap: 3px; }
+.seg div { text-align: center; padding: 9px 4px; border-radius: 11px; font-weight: 700; font-size: 14px; color: var(--muted); }
+.seg div.on { background: #FFFFFF; color: var(--pri); box-shadow: 0 2px 8px -4px rgba(0,0,0,.3); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border-radius: 999px; padding: 7px 12px; font-size: 14px; font-weight: 700; background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--line); color: var(--ink); display: inline-flex; gap: 6px; align-items: center; }
+.chip.on { background: var(--pri); color: #FFFFFF; box-shadow: none; }
+.chip .ic { width: 16px; height: 16px; stroke-width: 2.4; }
+.fld { display: flex; flex-direction: column; gap: 3px; }
+.fld label { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.fld div { background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--line); border-radius: 12px; padding: 10px 12px; font-size: 15px; display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 28px 28px 0 0; padding: 12px 16px 22px; box-shadow: 0 -20px 40px -12px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: 10px; z-index: 4; }
+.sheet::before { content: ""; width: 40px; height: 4px; border-radius: 2px; background: var(--line); align-self: center; }
+.sheet h4 { font-family: var(--display); font-size: 19px; margin: 0; }
+.shade { position: absolute; inset: 0; background: rgba(15,36,28,.45); z-index: 3; }
+.amount { background: var(--soft); border-radius: 16px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
+.amount small { color: var(--muted); font-size: 13px; display: block; }
+.amount b { font-family: var(--display); font-size: 32px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mode { border-radius: 14px; padding: 10px; min-height: 56px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14.5px; line-height: 1.15; background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--line); }
+.mode.on { background: var(--soft); box-shadow: inset 0 0 0 2.5px var(--pri); color: var(--pri); }
+.split { display: flex; height: 14px; border-radius: 7px; overflow: hidden; gap: 2px; }
+.split i { display: block; } .split .a { background: var(--pri); } .split .b { background: #6FA68A; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend b { color: var(--ink); } .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; }
+.big { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.entry { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.entry:first-of-type { border-top: 0; }
+.entry b { font-variant-numeric: tabular-nums; font-family: var(--display); }
+.entry small { display: block; color: var(--muted); font-size: 12px; }
+.note { font-size: 12.5px; color: var(--muted); }
+.promo-prev { background: var(--soft); border-radius: 14px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+.promo-prev s { color: var(--muted); font-size: 15px; } .promo-prev b { font-family: var(--display); font-size: 24px; color: var(--pri); }
+.mini-banner { background: var(--warn-soft); color: #5B3A00; border-radius: 14px; padding: 10px 12px; font-size: 13.5px; display: flex; gap: 8px; align-items: flex-start; line-height: 1.35; }
+
+/* Effets sur le site */
+.fx { padding-block: 40px 72px; }
+.fx h2 { font-size: clamp(26px, 3.6vw, 38px); font-weight: 800; margin-top: 6px; }
+.fx > .container > p { color: var(--muted); max-width: 56ch; margin: 10px 0 0; }
+.fx-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 32px; }
+.site { background: #FFFFFF; border-radius: 22px; overflow: hidden; box-shadow: 0 24px 40px -30px rgba(15,36,28,.6); min-width: 0; pointer-events: none; }
+.site .lab { background: var(--dark); color: #E9EEEC; font-size: 13px; padding: 8px 16px; font-weight: 700; display: flex; justify-content: space-between; gap: 8px; }
+.site .in { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.ban { display: flex; gap: 10px; align-items: flex-start; border-radius: 14px; padding: 12px 14px; background: var(--warn-soft); color: #5B3A00; font-size: 16px; line-height: 1.4; }
+.ban.promo { background: var(--soft); color: var(--dark); }
+.ban b { display: block; font-family: var(--display); }
+.sbook { border-radius: 18px; padding: 16px; background: var(--bg); display: flex; flex-direction: column; gap: 10px; }
+.sbook.off { opacity: .55; }
+.sfield { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; color: var(--muted); }
+.sbtn { border-radius: 999px; min-height: 54px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; background: var(--pri); color: #FFFFFF; }
+.sbtn.dis { background: #B8BFBC; }
+.sbtn.line { background: #FFFFFF; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+.sprice { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--soft); border-radius: 16px; padding: 14px 16px; }
+.sprice small { color: var(--pri); font-weight: 700; font-size: 14px; display: block; }
+.sprice b { font-family: var(--display); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.sprice s { color: var(--muted); font-size: 18px; margin-right: 8px; }
+.badge { background: var(--pri); color: #FFFFFF; font-family: var(--display); font-weight: 800; border-radius: 999px; padding: 6px 12px; font-size: 16px; white-space: nowrap; }
+.foot { background: #FFFFFF; padding: 28px 0 40px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h14M6 17l1.5-6h9L18 17M7 17v2M17 17v2M10 11l1-3h2l1 3"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2zM16 14.5h.01"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h8M16 6h4M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="container">
+    <span class="eyebrow">Maquette · espace chauffeur</span>
+    <h1>Tout pour gérer sa journée et son argent</h1>
+    <p>Pas cliquable : c'est un aperçu visuel, dans la continuité du site. Les montants, noms et dates sont des exemples.</p>
+    <div class="pills"><span class="pill">Tableau de bord</span><span class="pill">Encaissement en 2 gestes</span><span class="pill">Disponibilité et vacances</span><span class="pill">Promotions</span><span class="pill">Mon site</span></div>
+  </div>
+</header>
+
+<main>
+  <div class="container board">
+
+    <!-- 1 Accueil -->
+    <div class="item">
+      <div class="phone"><div class="screen" data-tab="0">
+        <div class="apptop"><div><h3>Bonjour</h3><small>mardi 13 octobre</small></div><span class="tag">3 / 4 courses</span></div>
+        <div class="body">
+          <div class="status"><div><b>Vous êtes en ligne</b><span>Les clients peuvent réserver</span></div><div class="sw"></div></div>
+          <div class="kpis">
+            <div class="kpi hl"><small>Encaissé</small><b>96 €</b></div>
+            <div class="kpi todo"><small>À encaisser</small><b>218 €</b></div>
+            <div class="kpi"><small>Assurance Maladie</small><b>22 €</b></div>
+          </div>
+          <div class="card">
+            <div class="row-h"><b>7 derniers jours</b><span>926 €</span></div>
+            <div class="bars" role="img" aria-label="Recettes des 7 derniers jours, de 74 à 232 euros">
+              <div class="bar"><i style="height:42%"></i>Me</div>
+              <div class="bar"><i style="height:70%"></i>Je</div>
+              <div class="bar"><i style="height:52%"></i>Ve</div>
+              <div class="bar"><i style="height:100%"></i>Sa</div>
+              <div class="bar"><i style="height:32%"></i>Di</div>
+              <div class="bar"><i style="height:61%"></i>Lu</div>
+              <div class="bar today"><em>96</em><i style="height:41%"></i>Ma</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="row-h"><b>Prochaine course</b><span class="tag warn">dans 25 min</span></div>
+            <div class="next"><div class="t">14:45</div><div><div class="r">Villemandeur → Aéroport d'Orly</div><div class="m">2 passagers · <span class="tbd">Mme Martin</span></div></div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><span class="k">Écran 1</span><b>Tableau de bord</b><span>Disponibilité, argent du jour et de la semaine, prochaine course.</span></div>
+    </div>
+
+    <!-- 2 Courses + encaissement -->
+    <div class="item">
+      <div class="phone"><div class="screen" data-tab="1">
+        <div class="apptop"><div><h3>Courses</h3><small>Aujourd'hui</small></div><span class="tag">4 courses</span></div>
+        <div class="body">
+          <div class="seg" style="grid-template-columns:1fr 1fr 1fr"><div>À traiter</div><div class="on">Aujourd'hui</div><div>Planning</div></div>
+          <div class="course"><div class="t">07:10</div><div><div class="r">Amilly → Gare de Montargis</div><div class="m">1 pers. · Espèces</div></div><div class="p">14 €</div></div>
+          <div class="course"><div class="t">09:00</div><div><div class="r">Châlette → Hôpital</div><div class="m">1 pers. · <span class="tag">Conventionné</span></div></div><div class="p">22 €</div></div>
+          <div class="course"><div class="t">11:30</div><div><div class="r">Montargis → Orléans</div><div class="m">2 pers. · Carte</div></div><div class="p">82 €</div></div>
+          <div class="course cur">
+            <div class="row-h"><span class="tag dark">Terminée</span><span>14:45</span></div>
+            <div class="r" style="font-weight:700">Villemandeur → Aéroport d'Orly</div>
+            <div class="m">2 pers. · <span class="tbd">Mme Martin</span> · ≈ 218 €</div>
+            <div class="btn">Encaisser 218 €</div>
+          </div>
+        </div>
+        <div class="shade"></div>
+        <div class="sheet">
+          <h4>Encaisser la course</h4>
+          <div class="amount"><div><small>Prix du taximètre</small><b>218,00 €</b></div><span class="tag">Modifier</span></div>
+          <div class="modes">
+            <div class="mode"><svg class="ic"><use href="#i-cash"/></svg>Espèces</div>
+            <div class="mode on"><svg class="ic"><use href="#i-card"/></svg>Carte</div>
+            <div class="mode"><svg class="ic"><use href="#i-cross"/></svg>Tiers payant</div>
+            <div class="mode"><svg class="ic"><use href="#i-bank"/></svg>Virement</div>
+          </div>
+          <div class="btn"><svg class="ic"><use href="#i-check"/></svg>Valider l'encaissement</div>
+          <div class="note" style="text-align:center">Le montant de l'estimation est déjà rempli. Corrigez-le si besoin.</div>
+        </div>
+      </div></div>
+      <div class="cap"><span class="k">Écran 2</span><b>Encaisser une course</b><span>Montant prérempli, un mode de paiement, un bouton. Plus de calcul à la fin.</span></div>
+    </div>
+
+    <!-- 3 Caisse -->
+    <div class="item">
+      <div class="phone"><div class="screen" data-tab="2">
+        <div class="apptop"><div><h3>Caisse</h3><small>Octobre 2026</small></div><span class="tag">Aujourd'hui</span></div>
+        <div class="body">
+          <div class="card">
+            <div class="row-h"><span>Encaissé aujourd'hui</span><span class="tag">2 paiements</span></div>
+            <div class="big">96 €</div>
+            <div class="split"><i class="a" style="width:15%"></i><i class="b" style="width:85%"></i></div>
+            <div class="legend"><span><i style="background:var(--pri)"></i>Espèces <b>14 €</b></span><span><i style="background:#6FA68A"></i>Carte <b>82 €</b></span></div>
+          </div>
+          <div class="two">
+            <div class="kpi todo"><small>À encaisser</small><b>218 €</b></div>
+            <div class="kpi"><small>À recevoir de l'Assurance Maladie</small><b>22 €</b></div>
+          </div>
+          <div class="card" style="gap:0">
+            <div class="row-h" style="margin-bottom:4px"><b>Aujourd'hui</b><span>3 lignes</span></div>
+            <div class="entry"><div>Montargis → Orléans<small>11:30 · Carte</small></div><b>82 €</b></div>
+            <div class="entry"><div>Châlette → Hôpital<small>09:00 · Tiers payant · en attente</small></div><b>22 €</b></div>
+            <div class="entry"><div>Amilly → Gare<small>07:10 · Espèces</small></div><b>14 €</b></div>
+          </div>
+          <div class="btn soft"><svg class="ic"><use href="#i-down"/></svg>Exporter le mois pour le comptable</div>
+        </div>
+      </div></div>
+      <div class="cap"><span class="k">Écran 3</span><b>La caisse</b><span>Total par mode de paiement, ce qui reste à encaisser, export simple en fin de mois.</span></div>
+    </div>
+
+    <!-- 4 Disponibilité -->
+    <div class="item">
+      <div class="phone"><div class="screen" data-tab="3">
+        <div class="apptop"><div><h3>Disponibilité</h3><small>Réglages</small></div></div>
+        <div class="body">
+          <div class="status" style="background:var(--warn);"><div><b>En vacances</b><span>Réservations fermées sur le site</span></div><svg class="ic" style="width:30px;height:30px"><use href="#i-sun"/></svg></div>
+          <div class="seg" style="grid-template-columns:1fr 1fr 1fr"><div>En ligne</div><div>Hors ligne</div><div class="on">Vacances</div></div>
+          <div class="two">
+            <div class="fld"><label>Du</label><div>20 nov. <svg class="ic" style="width:18px;height:18px"><use href="#i-cal"/></svg></div></div>
+            <div class="fld"><label>Au</label><div>27 nov. <svg class="ic" style="width:18px;height:18px"><use href="#i-cal"/></svg></div></div>
+          </div>
+          <div class="fld"><label>Message affiché sur le site</label><div style="align-items:flex-start;min-height:72px;line-height:1.4">En congés du 20 au 27 novembre. Reprise des courses le 28.</div></div>
+          <div class="chips"><span class="chip on"><svg class="ic"><use href="#i-check"/></svg>Garder le numéro visible</span><span class="chip">Reprendre automatiquement</span></div>
+          <div class="note">En ligne, hors ligne ou vacances : le site s'adapte tout de suite, sans toucher au code.</div>
+          <div class="mini-banner"><svg class="ic"><use href="#i-info"/></svg><span>Aperçu : « En congés du 20 au 27 novembre. Reprise des courses le 28. »</span></div>
+        </div>
+      </div></div>
+      <div class="cap"><span class="k">Écran 4</span><b>Disponibilité et vacances</b><span>Un choix à trois positions. Le site réagit et affiche son message.</span></div>
+    </div>
+
+    <!-- 5 Promotions -->
+    <div class="item">
+      <div class="phone"><div class="screen" data-tab="3">
+        <div class="apptop"><div><h3>Promotions</h3><small>Réglages</small></div><span class="tag dark">1 active</span></div>
+        <div class="body">
+          <div class="card" style="border:2px solid var(--pri)">
+            <div class="row-h"><span class="tag dark">En cours</span><span>jusqu'au 30 nov.</span></div>
+            <b style="font-family:var(--display);font-size:17px">−10 % gares et aéroports</b>
+          </div>
+          <div class="row-h" style="margin-top:2px"><b>Nouvelle promotion</b></div>
+          <div class="fld"><label>Nom</label><div>Rentrée, trajets vers Orly</div></div>
+          <div class="two">
+            <div class="fld"><label>Remise</label><div>10 <b>%</b></div></div>
+            <div class="fld"><label>Code (facultatif)</label><div style="color:var(--muted)">—</div></div>
+          </div>
+          <div class="fld"><label>Pour quels trajets</label>
+            <div class="chips" style="background:none;box-shadow:none;padding:0"><span class="chip on">Gares et aéroports</span><span class="chip">Tous</span><span class="chip">Longue distance</span></div></div>
+          <div class="two">
+            <div class="fld"><label>Du</label><div>1 nov.</div></div>
+            <div class="fld"><label>Au</label><div>30 nov.</div></div>
+          </div>
+          <div class="promo-prev"><span style="font-size:13px;color:var(--muted)">Prix affiché pour Orly</span><span><s>218 €</s> <b>196 €</b></span></div>
+          <div class="btn">Activer la promotion</div>
+        </div>
+      </div></div>
+      <div class="cap"><span class="k">Écran 5</span><b>Promotions</b><span>Remise, trajets concernés, dates. Le prix barré apparaît sur le site.</span></div>
+    </div>
+
+    <!-- 6 Mon site -->
+    <div class="item">
+      <div class="phone"><div class="screen" data-tab="3">
+        <div class="apptop"><div><h3>Mon site</h3><small>Ce qui s'affiche chez vous</small></div></div>
+        <div class="body">
+          <div class="card">
+            <div class="row-h"><b>Infos</b><span class="tag">Modifier</span></div>
+            <div class="two">
+              <div class="fld"><label>Téléphone</label><div>06 52 44 60 68</div></div>
+              <div class="fld"><label>Horaires</label><div><span class="tbd">5 h – 23 h</span></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="row-h"><b>Tarifs <span class="tbd" style="font-weight:400;font-size:12px">exemples</span></b><span class="tag">Modifier</span></div>
+            <div class="two">
+              <div class="fld"><label>Prise en charge</label><div>4,00 €</div></div>
+              <div class="fld"><label>Minimum</label><div>8,00 €</div></div>
+              <div class="fld"><label>Jour</label><div>2,00 €/km</div></div>
+              <div class="fld"><label>Nuit, dimanche</label><div>2,50 €/km</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="row-h"><b>Paiements acceptés</b></div>
+            <div class="chips"><span class="chip on"><svg class="ic"><use href="#i-check"/></svg>Espèces</span><span class="chip on"><svg class="ic"><use href="#i-check"/></svg>Carte</span><span class="chip on"><svg class="ic"><use href="#i-check"/></svg>Tiers payant</span><span class="chip">Virement</span></div>
+          </div>
+          <div class="card"><div class="row-h"><b>Communes desservies</b><span>26</span></div><div class="note">Montargis, Amilly, Châlette-sur-Loing…</div></div>
+        </div>
+      </div></div>
+      <div class="cap"><span class="k">Écran 6</span><b>Mon site</b><span>Téléphone, horaires, tarifs, paiements, communes : il les change lui-même.</span></div>
+    </div>
+  </div>
+
+  <section class="fx">
+    <div class="container">
+      <span class="eyebrow">Côté client</span>
+      <h2>Ce que ça change sur le site</h2>
+      <p>Quand il modifie l'application, la page publique suit tout de suite.</p>
+      <div class="fx-grid">
+        <div class="site">
+          <div class="lab"><span>Site public</span><span>Il est en vacances</span></div>
+          <div class="in">
+            <div class="ban"><svg class="ic" style="color:#B26A00;margin-top:2px"><use href="#i-sun"/></svg><div><b>En congés du 20 au 27 novembre</b>Reprise des courses le 28. Pour une urgence, appelez le 06 52 44 60 68.</div></div>
+            <div class="sbook off"><div class="sfield">Montargis</div><div class="sfield">Aéroport d'Orly</div><div class="sbtn dis">Réservations fermées</div></div>
+            <div class="sbtn line">Appeler 06 52 44 60 68</div>
+          </div>
+        </div>
+        <div class="site">
+          <div class="lab"><span>Site public</span><span>Promotion active</span></div>
+          <div class="in">
+            <div class="ban promo"><svg class="ic" style="color:var(--pri);margin-top:2px"><use href="#i-check"/></svg><div><b>−10 % vers les gares et aéroports</b>Jusqu'au 30 novembre.</div></div>
+            <div class="sprice"><div><small>Prix estimé · Montargis → Orly</small><s>218 €</s><b>196 €</b></div><span class="badge">−10 %</span></div>
+            <div class="sbtn">Envoyer ma demande</div>
+          </div>
+        </div>
+        <div class="site">
+          <div class="lab"><span>Site public</span><span>Il est hors ligne ce soir</span></div>
+          <div class="in">
+            <div class="ban"><svg class="ic" style="color:#B26A00;margin-top:2px"><use href="#i-info"/></svg><div><b>Plus de course ce soir</b>Les réservations reprennent demain à 5 h.</div></div>
+            <div class="sbook"><div class="sfield">Demain · 07 h 00</div><div class="sbtn">Réserver pour demain</div></div>
+            <div class="sbtn line">Appeler 06 52 44 60 68</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><div class="container">Maquette de présentation. Montants, noms et dates : exemples. Les tarifs de taxi sont réglementés : à vérifier avec le client avant de s'en servir.</div></footer>
+
+<script>
+(function () {
+  var tabs = [["i-home", "Accueil"], ["i-car", "Courses"], ["i-wallet", "Caisse"], ["i-sliders", "Réglages"]];
+  document.querySelectorAll(".screen").forEach(function (sc) {
+    var on = +sc.dataset.tab;
+    var bar = document.createElement("div"); bar.className = "sbar";
+    bar.innerHTML = "<span>14:20</span><span>5G ▮▮▮</span>";
+    sc.insertBefore(bar, sc.firstChild);
+    var nav = document.createElement("div"); nav.className = "nav";
+    tabs.forEach(function (t, i) {
+      var d = document.createElement("div"); if (i === on) d.className = "on";
+      d.innerHTML = '<svg class="ic"><use href="#' + t[0] + '"/></svg>' + t[1];
+      nav.appendChild(d);
+    });
+    sc.appendChild(nav);
+  });
+})();
+</script>

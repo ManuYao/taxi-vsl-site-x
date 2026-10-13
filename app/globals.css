@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Palette « Vert forêt » (voir maquette). Les illustrations SVG utilisent ces variables. */
+:root {
+  --pri: #1e5b43;
+  --pri-hover: #164633;
+  --dark: #0f241c;
+  --soft: #e4efe8;
+  --soft2: #c7decf;
+  --bg: #f6f7f5;
+  --ink: #141819;
+}
+
+@theme inline {
+  --color-pri: var(--pri);
+  --color-pri-hover: var(--pri-hover);
+  --color-dark: var(--dark);
+  --color-soft: var(--soft);
+  --color-soft2: var(--soft2);
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --font-sans: var(--font-atkinson), system-ui, sans-serif;
+  --font-title: var(--font-sora), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-title);
+}
+
+:focus-visible {
+  outline: 3px solid var(--pri);
+  outline-offset: 3px;
+}
+
+/* Contenu provisoire, à remplacer par les infos du client */
+.tbd {
+  outline: 2px dashed #b7791f;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
