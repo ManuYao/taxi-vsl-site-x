@@ -3,10 +3,13 @@
 //
 // Corps JSON (Content-Type: application/json) :
 //   { depart: { lat, lon, label? }, arrivee: { lat, lon, label? }, arret?: { lat, lon, label? },
-//     date: "YYYY-MM-DD", heure: "HH:MM" }   <- heure murale de Paris, telle que saisie par le client
-// Réponse 200 : { km, minutes, duree, prix, prixCents, tarif, approximatif, arret }
+//     date: "YYYY-MM-DD", heure: "HH:MM",   <- heure murale de Paris, telle que saisie par le client
+//     code?: "AUTOMNE10" }                  <- code promo (facultatif)
+// Réponse 200 : { km, minutes, duree, prix, prixCents, tarif, approximatif, arret, tarifsConfirmes,
+//                 promo: { nom, pourcent } | null, prixAvant (prix sans remise, ou null), codeInvalide }
 // Erreur : { erreur: "message court en français" } avec le code 400, 413, 415, 429 ou 500
 import { z } from "zod";
+import { avecPromotion } from "@/lib/promotions-serveur";
 import { lireTarifs } from "@/lib/reglages-serveur";
 import { calculerPrix, lireDate, lireHeure } from "@/lib/pricing";
 import { itineraire } from "@/lib/routing";
@@ -28,6 +31,7 @@ const schema = z.object({
   arret: point.nullish(),
   date: z.string().refine((d) => lireDate(d) !== null), // vraie date du calendrier
   heure: z.string().refine((h) => lireHeure(h) !== null), // 00:00 à 23:59
+  code: z.string().max(30).optional(), // code promo saisi par le client (facultatif)
 });
 
 const MESSAGES = {
@@ -122,21 +126,27 @@ export async function POST(request) {
     }
     const lecture = schema.safeParse(corps);
     if (!lecture.success) return erreur(messageErreur(lecture.error), 400);
-    const { depart, arrivee, arret, date, heure } = lecture.data;
+    const { depart, arrivee, arret, date, heure, code } = lecture.data;
 
     // Avec un arrêt, l'itinéraire passe par lui : départ→arrêt + arrêt→arrivée.
     const trajet = await itineraire(arret ? [depart, arret, arrivee] : [depart, arrivee]);
     const tarifs = await lireTarifs(); // ceux du patron, sinon ceux de site.config.js
-    const prix = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date, heure, tarifs });
+    const calcule = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date, heure, tarifs });
+    // Promotion éventuelle (automatique, ou avec le code saisi) : la meilleure remise s'applique
+    const prix = await avecPromotion(calcule, { km: trajet.km, depart: depart.label, arrivee: arrivee.label, jour: date, code });
 
     // km est arrondi au km pour l'affichage (« 107 km », comme la maquette) ; le prix, lui, est calculé au dixième de km.
     return Response.json(
       {
         km: Math.max(1, Math.round(trajet.km)),
         minutes: trajet.minutes,
-        duree: prix.duree, // même texte que dureeLisible(minutes) de lib/dates.js
-        prix: prix.prix, // euros entiers : « ≈ 218 € »
+        duree: calcule.duree, // même texte que dureeLisible(minutes) de lib/dates.js
+        prix: prix.prix, // euros entiers : « ≈ 218 € » (après remise s'il y en a une)
         prixCents: prix.prixCents,
+        prixAvant: prix.avant, // prix sans la remise, ou null
+        promo: prix.promo, // { nom, pourcent } ou null
+        codeInvalide: prix.codeInvalide,
+        tarif: calcule.tarif, // "jour" | "nuit"
         tarif: prix.tarif, // "jour" | "nuit"
         approximatif: trajet.approximatif, // true : ORS indisponible, estimation à vol d'oiseau
         arret: Boolean(arret),

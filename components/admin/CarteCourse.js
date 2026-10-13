@@ -37,6 +37,11 @@ export function Details({ course }) {
     <p className="flex flex-wrap gap-x-3 gap-y-1 text-[15px] tabular-nums text-[#5a6366]">
       <span>{course.passengers} passager{course.passengers > 1 ? "s" : ""}</span>
       <span className="font-bold text-ink">{prix}</span>
+      {course.promo_percent != null && (
+        <span className="font-bold text-pri">
+          Promo −{course.promo_percent} %{course.est_price_before_cents != null ? ` (au lieu de ${Math.round(course.est_price_before_cents / 100)} €)` : ""}
+        </span>
+      )}
       {course.est_km != null && <span>{Math.round(course.est_km)} km</span>}
     </p>
   );

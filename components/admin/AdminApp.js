@@ -249,7 +249,8 @@ function Espace() {
         )}
       </header>
 
-      {nouvelle && aTraiter.some((c) => c.id === nouvelle.id) && (
+      {/* Sur l'onglet « À traiter », la carte de la demande apparaît déjà : le bandeau ferait doublon */}
+      {nouvelle && onglet !== "traiter" && aTraiter.some((c) => c.id === nouvelle.id) && (
         <div role="status" className="mx-4 mb-2 flex items-center gap-3 rounded-2xl bg-dark p-3.5 text-white">
           <div className="min-w-0 flex-1 text-[15px]">
             <b className="block">Nouvelle demande</b>

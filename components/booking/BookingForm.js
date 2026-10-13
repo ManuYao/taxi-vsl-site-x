@@ -92,6 +92,8 @@ function Formulaire({ onNouvelle, onFerme }) {
   const [passagers, setPassagers] = useState(2);
   const [conventionne, setConventionne] = useState(false);
   const [bagages, setBagages] = useState(false);
+  const [code, setCode] = useState(""); // code promo (facultatif)
+  const [codeOuvert, setCodeOuvert] = useState(false);
 
   const [erreur, setErreur] = useState("");
   const [proposerAppel, setProposerAppel] = useState(false); // panne d'envoi : on met le téléphone en avant
@@ -120,6 +122,7 @@ function Formulaire({ onNouvelle, onFerme }) {
     arret: arretOuvert ? arret : null,
     date: ymd(date),
     heure: `${pad2(heure)}:${pad2(minute)}`,
+    code,
   });
 
   // Si on choisit « aujourd'hui », l'heure ne peut pas être déjà passée.
@@ -180,6 +183,7 @@ function Formulaire({ onNouvelle, onFerme }) {
       bagages,
       conventionne,
       ...(texte("trajet-ref") ? { refTrajet: texte("trajet-ref") } : {}),
+      ...(code.trim() ? { codePromo: code.trim() } : {}),
       nom: texte("nom"),
       telephone: texte("telephone"),
       email: texte("email"),
@@ -370,10 +374,20 @@ function Formulaire({ onNouvelle, onFerme }) {
 
       <Champ id="trajet-ref" label="Numéro de vol ou de train" facultatif className={pleine} autoComplete="off" placeholder="Ex. AF1234 ou TGV 6789" />
 
+      {codeOuvert ? (
+        <Champ id="code-promo" label="Code promo" facultatif className={pleine} autoComplete="off" placeholder="Ex. AUTOMNE10" value={code} onChange={(e) => setCode(e.target.value)} />
+      ) : (
+        <button type="button" onClick={() => setCodeOuvert(true)} className={`inline-flex items-center gap-2 justify-self-start py-1 text-base font-bold text-pri ${pleine}`}>
+          <i className="inline-flex size-[26px] items-center justify-center rounded-full bg-soft text-lg not-italic">%</i>
+          J&apos;ai un code promo
+        </button>
+      )}
+
       <div className={pleine}>
         <PrixEstime
           statut={estimation.statut}
           resultat={estimation.resultat}
+          codeSaisi={code.trim() !== ""}
           conventionne={conventionne}
           messageVide={arretEnAttente ? "Choisissez l'adresse de l'arrêt dans la liste pour voir le prix." : undefined}
         />

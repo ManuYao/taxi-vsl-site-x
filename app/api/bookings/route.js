@@ -19,6 +19,7 @@ import { envoyerTelegram } from "@/lib/telegram";
 import { envoyerPush } from "@/lib/push";
 import { lireDisponibilite } from "@/lib/disponibilite-serveur";
 import { lireTarifs } from "@/lib/reglages-serveur";
+import { avecPromotion } from "@/lib/promotions-serveur";
 import { destinatairesAlertes, envoyerMail } from "@/lib/mail";
 import { supabaseServeur } from "@/lib/supabase";
 
@@ -91,14 +92,19 @@ export async function POST(request) {
     if (avecCoordonnees(d.depart) && avecCoordonnees(d.arrivee) && (!d.arret || avecCoordonnees(d.arret))) {
       try {
         const trajet = await itineraire(d.arret ? [d.depart, d.arret, d.arrivee] : [d.depart, d.arrivee]);
-        const prix = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date: d.date, heure: d.heure, tarifs: await lireTarifs() });
+        const calcule = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date: d.date, heure: d.heure, tarifs: await lireTarifs() });
+        // Promotion éventuelle (automatique, ou avec le code saisi) : recalculée ici, jamais crue sur parole
+        const prix = await avecPromotion(calcule, { km: trajet.km, depart: d.depart.label, arrivee: d.arrivee.label, jour: d.date, code: d.codePromo });
         estimation = {
           km: Math.max(1, Math.round(trajet.km)),
           minutes: trajet.minutes,
           prix: prix.prix,
           prixCents: prix.prixCents,
-          tarif: prix.tarif,
-          duree: prix.duree,
+          prixAvant: prix.avant,
+          prixAvantCents: prix.avantCents,
+          promo: prix.promo,
+          tarif: calcule.tarif,
+          duree: calcule.duree,
           approximatif: trajet.approximatif,
         };
       } catch (e) {
@@ -127,6 +133,9 @@ export async function POST(request) {
       est_km: estimation?.km ?? null,
       est_minutes: estimation?.minutes ?? null,
       est_price_cents: estimation?.prixCents ?? null,
+      est_price_before_cents: estimation?.prixAvantCents ?? null,
+      promo_name: estimation?.promo?.nom ?? null,
+      promo_percent: estimation?.promo?.pourcent ?? null,
       tarif: estimation?.tarif ?? null,
       est_approximatif: estimation?.approximatif ?? null,
       customer_name: d.nom,
