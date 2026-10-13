@@ -106,7 +106,7 @@ export default function AjouterCourse({ onAjouter, onFermer }) {
       <AdresseInput key={`arrivee-${cleArrivee}`} id="arrivee" label="Arrivée" placeholder="Ville, gare, aéroport…" defaultValue={arriveeInitiale} onSelect={setArrivee} />
       <div className="flex flex-wrap items-center gap-2">
         {site.destinations.map((d) => (
-          <button key={d.nom} type="button" aria-label={`Arrivée : ${d.libelle ?? d.nom}`} onClick={() => choisirDestination(d)} className="min-h-11 rounded-full bg-bg px-3.5 text-[15px] shadow-[inset_0_0_0_1.5px_#e2e6e3] hover:bg-soft">
+          <button key={d.nom} type="button" aria-label={`Arrivée : ${d.nom}${d.libelle ? ` (${d.libelle})` : ""}`} onClick={() => choisirDestination(d)} className="min-h-11 rounded-full bg-bg px-3.5 text-[15px] shadow-[inset_0_0_0_1.5px_#e2e6e3] hover:bg-soft">
             {d.nom}
           </button>
         ))}

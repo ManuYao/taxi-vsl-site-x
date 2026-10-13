@@ -1,4 +1,6 @@
 import site from "@/site.config";
+import Link from "next/link";
+import { slugCommune } from "@/lib/communes";
 import { Container, SectionHead } from "./ui";
 
 const L = 560;
@@ -96,8 +98,10 @@ export default function Zones() {
       <Container>
         <ul aria-label="Communes desservies" className="mt-9 flex list-none flex-wrap gap-2 p-0">
           {site.communes.map((c) => (
-            <li key={c} className="rounded-full bg-white px-4 py-2 text-base">
-              {c}
+            <li key={c.nom}>
+              <Link prefetch={false} href={`/taxi/${slugCommune(c.nom)}`} className="inline-flex min-h-11 items-center rounded-full bg-white px-4 py-2 text-base text-ink no-underline hover:bg-soft">
+                {c.nom}
+              </Link>
             </li>
           ))}
         </ul>

@@ -1,4 +1,5 @@
 import site from "@/site.config";
+import Link from "next/link";
 import { PhoneIcon, ChatIcon } from "./Icons";
 
 // Barre fixe en bas sur mobile : Appeler · WhatsApp · Réserver
@@ -16,9 +17,9 @@ export default function MobileBar() {
       <a href={`https://wa.me/${site.whatsapp}`} className={`${btn} border-2 border-ink text-ink`}>
         <ChatIcon className="size-5" /> WhatsApp
       </a>
-      <a href="#reserver" className={`${btn} border-2 border-ink text-ink`}>
+      <Link href="/#reserver" className={`${btn} border-2 border-ink text-ink`}>
         Réserver
-      </a>
+      </Link>
     </nav>
   );
 }

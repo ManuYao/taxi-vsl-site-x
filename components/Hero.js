@@ -1,11 +1,12 @@
 import site from "@/site.config";
+import Link from "next/link";
 import Voiture from "./Voiture";
 import { PhoneIcon, CheckIcon, PlusIcon } from "./Icons";
 
 const badges = ["Conventionné CPAM", "Sans compte", "Prix affiché avant"];
 
 export default function Hero() {
-  const communes = site.communes.filter((c) => c !== site.base.ville).slice(0, 5);
+  const communes = site.communes.filter((c) => c.nom !== site.base.ville).slice(0, 5).map((c) => c.nom);
 
   return (
     <section className="overflow-hidden bg-white pt-6 pb-14">
@@ -28,12 +29,12 @@ export default function Hero() {
               <PhoneIcon className="size-[22px]" />
               {site.telephone.affiche}
             </a>
-            <a
-              href="#reserver"
+            <Link
+              href="/#reserver"
               className="inline-flex min-h-[58px] items-center justify-center whitespace-nowrap rounded-full border-2 border-ink bg-white px-[26px] py-3.5 text-[19px] font-bold leading-tight text-ink no-underline hover:bg-soft"
             >
               Réserver en ligne
-            </a>
+            </Link>
           </div>
           <p className="max-w-[44ch] text-[17px] text-[#5a6366]">
             {communes.join(" · ")} · <span className="tbd">et toutes les communes voisines</span>

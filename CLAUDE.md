@@ -105,6 +105,7 @@ site.config.js            nom, téléphone, WhatsApp, couleurs, villes, tarifs p
 ## À faire plus tard : style et effets (PAS maintenant)
 - Quand le fonctionnel est terminé, on reprendra le style et on ajoutera des effets.
 - **Espace chauffeur, onglet Appli** : donner un fond coloré différent aux sections (Disponibilité, Notifications, Mes tarifs, Promotions, Équipe…), un vert de la palette avec beaucoup de transparence, pour séparer les blocs et casser le « trop blanc ».
+- **Onglet Appli : sections dépliables** : chaque section (Mon compte, Disponibilité, Notifications, Mes tarifs, Promotions, Équipe, Installation…) devient un menu repliable (comme le tuto d'installation, déjà fait avec `<details>`), pour que la page ne soit pas trop longue. Le contenu reste tel quel. Avec le style : un fond un peu plus foncé une section sur deux, qui change selon que la section est ouverte ou fermée (code couleur discret), plus un moyen de tout replier d'un coup.
 - **Arrière-plans** : l'utilisateur veut un fond « cool » en motif CSS, à générer avec https://www.magicpattern.design/tools/css-backgrounds (aux couleurs de la palette vert forêt, discret pour garder la lisibilité : public âgé, fort contraste). À essayer sur le site public et l'espace chauffeur.
 - Ne pas le faire tant que l'utilisateur ne le demande pas.
 

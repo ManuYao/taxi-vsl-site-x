@@ -282,7 +282,7 @@ function Formulaire({ onNouvelle, onFerme }) {
           <button
             key={d.nom}
             type="button"
-            aria-label={`Arrivée : ${d.libelle ?? d.nom}`}
+            aria-label={`Arrivée : ${d.nom}${d.libelle ? ` (${d.libelle})` : ""}`}
             onClick={() => choisirDestination(d)}
             className="min-h-12 rounded-full bg-bg px-4 text-base shadow-[inset_0_0_0_1.5px_#e2e6e3] hover:bg-soft"
           >

@@ -14,13 +14,56 @@ const site = {
   // SMTP personnalisé chez Supabase (donc un nom de domaine vérifié) : à passer à true seulement une fois celui-ci en place.
   admin: { codeParEmail: false },
 
-  // Liste de départ issue de la maquette, à valider avec le client
+  // Adresse publique du site (sert aux liens canoniques, au plan du site et aux aperçus de partage).
+  // Provisoire : à remplacer par le vrai nom de domaine. Peut aussi venir de la variable NEXT_PUBLIC_SITE_URL.
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://taxik.netlify.app",
+
+  // Référencement Google. Tant que c'est false, le site demande aux moteurs de recherche de NE PAS l'indexer
+  // (contenu provisoire, tarifs fictifs). Passer à true le jour de la mise en ligne définitive.
+  indexation: false,
+
+  // Mentions légales : tout est à fournir par le client (.tbd tant que ce n'est pas fait).
+  legal: {
+    raisonSociale: "", // ex. « Taxi Dupont » ou « SARL Dupont Transports »
+    formeJuridique: "", // ex. « Entreprise individuelle », « SARL au capital de … € »
+    siret: "",
+    adresse: "",
+    responsablePublication: "",
+    email: "",
+    numeroLicence: "", // licence de taxi / autorisation de stationnement, ou agrément VSL
+    hebergeur: "Netlify, Inc. (États-Unis), https://www.netlify.com",
+    conservationAns: 3, // durée de conservation des demandes de course (à confirmer)
+  },
+
+  // Communes desservies (liste de départ issue de la maquette, à valider avec le client).
+  // Position et code postal : géocodeur public de l'IGN. Chaque commune a sa page /taxi/<nom>.
   communes: [
-    "Montargis", "Amilly", "Châlette-sur-Loing", "Villemandeur", "Pannes", "Cepoy",
-    "Corquilleroy", "Conflans-sur-Loing", "Saint-Germain-des-Prés", "Chevillon-sur-Huillard",
-    "Mormant-sur-Vernisson", "Solterre", "Girolles", "Paucourt", "Chuelles",
-    "Douchy-Montcorbon", "Dordives", "Ferrières-en-Gâtinais", "Courtenay", "Château-Renard",
-    "Triguères", "Vimory", "Fontenay-sur-Loing", "Ladon", "Bellegarde", "Nogent-sur-Vernisson",
+    { nom: "Montargis", cp: "45200", lat: 47.9983, lon: 2.7354 },
+    { nom: "Amilly", cp: "45200", lat: 47.979, lon: 2.7843 },
+    { nom: "Châlette-sur-Loing", cp: "45120", lat: 48.0191, lon: 2.7205 },
+    { nom: "Villemandeur", cp: "45700", lat: 47.9864, lon: 2.7018 },
+    { nom: "Pannes", cp: "45700", lat: 48.0047, lon: 2.6759 },
+    { nom: "Cepoy", cp: "45120", lat: 48.0497, lon: 2.7427 },
+    { nom: "Corquilleroy", cp: "45120", lat: 48.0369, lon: 2.7079 },
+    { nom: "Conflans-sur-Loing", cp: "45700", lat: 47.948, lon: 2.7887 },
+    { nom: "Saint-Germain-des-Prés", cp: "45220", lat: 47.9671, lon: 2.8362 },
+    { nom: "Chevillon-sur-Huillard", cp: "45700", lat: 47.9664, lon: 2.6269 },
+    { nom: "Mormant-sur-Vernisson", cp: "45700", lat: 47.9425, lon: 2.7364 },
+    { nom: "Solterre", cp: "45700", lat: 47.9139, lon: 2.7352 },
+    { nom: "Girolles", cp: "45120", lat: 48.0686, lon: 2.726 },
+    { nom: "Paucourt", cp: "45200", lat: 48.0363, lon: 2.7893 },
+    { nom: "Chuelles", cp: "45220", lat: 48.0001, lon: 2.9702 },
+    { nom: "Douchy-Montcorbon", cp: "45220", lat: 47.9535, lon: 3.0596 },
+    { nom: "Dordives", cp: "45680", lat: 48.146, lon: 2.7816 },
+    { nom: "Ferrières-en-Gâtinais", cp: "45210", lat: 48.11, lon: 2.8071 },
+    { nom: "Courtenay", cp: "45320", lat: 48.0343, lon: 3.0617 },
+    { nom: "Château-Renard", cp: "45220", lat: 47.9264, lon: 2.9238 },
+    { nom: "Triguères", cp: "45220", lat: 47.9418, lon: 2.9935 },
+    { nom: "Vimory", cp: "45700", lat: 47.9486, lon: 2.6853 },
+    { nom: "Fontenay-sur-Loing", cp: "45210", lat: 48.0808, lon: 2.7704 },
+    { nom: "Ladon", cp: "45270", lat: 48.0076, lon: 2.5296 },
+    { nom: "Bellegarde", cp: "45270", lat: 47.9875, lon: 2.4439 },
+    { nom: "Nogent-sur-Vernisson", cp: "45290", lat: 47.8359, lon: 2.7373 },
   ],
 
   // Carte des zones : communes dessinées (position GPS approximative, décalage du texte)

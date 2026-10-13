@@ -1,19 +1,20 @@
 import site from "@/site.config";
+import Link from "next/link";
 import { PhoneIcon } from "./Icons";
 
 const liens = [
-  ["#reserver", "Réserver"],
-  ["#services", "Services"],
-  ["#cpam", "Conventionné"],
-  ["#zones", "Zones"],
-  ["#faq", "Questions"],
+  ["/#reserver", "Réserver"],
+  ["/#services", "Services"],
+  ["/#cpam", "Conventionné"],
+  ["/#zones", "Zones"],
+  ["/#faq", "Questions"],
 ];
 
 export default function Header() {
   return (
     <header className="bg-white">
       <div className="mx-auto flex max-w-[1160px] items-center justify-between gap-4 px-4 py-4 sm:px-8">
-        <a href="#top" className="flex min-w-0 items-center gap-3 text-ink no-underline">
+        <Link href="/" className="flex min-w-0 items-center gap-3 text-ink no-underline">
           <span className="flex size-11 flex-none items-center justify-center rounded-xl bg-pri">
             <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" className="size-7">
               <path d="M6 21h20M8 21l2-7h12l2 7M9 21v3M23 21v3" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -26,7 +27,7 @@ export default function Header() {
               Taxi · VSL · <span className="tbd">{site.infos.zoneCourte}</span>
             </small>
           </span>
-        </a>
+        </Link>
 
         <nav aria-label="Menu" className="hidden gap-7 text-base min-[980px]:flex">
           {liens.map(([href, texte]) => (

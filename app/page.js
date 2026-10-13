@@ -11,11 +11,16 @@ import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 import TbdToggle from "@/components/TbdToggle";
+import JsonLd from "@/components/JsonLd";
+import { donneesEntreprise } from "@/lib/seo";
 import site from "@/site.config";
+
+export const metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   return (
     <>
+      <JsonLd data={donneesEntreprise(site, site.communes)} />
       <Header />
       <main id="top" className="pb-24 sm:pb-0">
         <Hero />
