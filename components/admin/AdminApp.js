@@ -12,9 +12,10 @@ import CarteCourse from "./CarteCourse";
 import Connexion from "./Connexion";
 import Disponibilite from "./Disponibilite";
 import Planning from "./Planning";
-import { IconeAppli, IconeCalendrier, IconeCloche } from "./icones";
+import Caisse from "./Caisse";
+import { IconeAppli, IconeCalendrier, IconeCloche, IconeEuro } from "./icones";
 
-const TITRES = { traiter: "À traiter", planning: "Planning", appli: "Appli" };
+const TITRES = { traiter: "À traiter", planning: "Planning", caisse: "Caisse", appli: "Appli" };
 
 function Plein({ children }) {
   return <main className="mx-auto flex min-h-dvh max-w-[520px] flex-col items-center justify-center gap-4 px-5 text-center">{children}</main>;
@@ -34,6 +35,7 @@ function Espace() {
   const [fiche, setFiche] = useState(null); // { userId, data } : fiche d'équipe de la personne connectée
   const [courses, setCourses] = useState(null); // { actives, historique }
   const [dispo, setDispo] = useState(null); // ligne « availability » (null : pas lue, ou table absente)
+  const [versionCaisse, setVersionCaisse] = useState(0); // change à chaque paiement : l'onglet Caisse se relit
   const [problemeReseau, setProblemeReseau] = useState(false);
   const [onglet, setOnglet] = useState("traiter");
   const [maintenant, setMaintenant] = useState(() => new Date());
@@ -198,6 +200,31 @@ function Espace() {
     [charger],
   );
 
+  // Encaisser une course : montant + mode de paiement. La course passe à « terminée ».
+  const encaisser = useCallback(
+    async (bookingId, mode, montant) => {
+      const jeton = (await supabaseNavigateur().auth.getSession()).data.session?.access_token;
+      try {
+        const reponse = await fetch("/api/paiements", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${jeton}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId, mode, montant }),
+        });
+        const json = await reponse.json().catch(() => ({}));
+        setMessage(
+          reponse.ok
+            ? { ton: "ok", texte: mode === "tiers_payant" ? "Enregistré : à recevoir de l'Assurance Maladie." : "Paiement enregistré. Course terminée." }
+            : { ton: "erreur", texte: json.erreur ?? "Paiement impossible pour le moment." },
+        );
+      } catch {
+        setMessage({ ton: "erreur", texte: "Pas de connexion. Réessayez dans un instant." });
+      }
+      setVersionCaisse((v) => v + 1);
+      await charger();
+    },
+    [charger],
+  );
+
   if (session === undefined) return <Plein><p className="text-lg text-[#5a6366]">Chargement…</p></Plein>;
   if (session === null) return <Connexion />;
   if (ficheDeCeCompte === undefined) return <Plein><p className="text-lg text-[#5a6366]">Chargement…</p></Plein>;
@@ -225,9 +252,11 @@ function Espace() {
   const planning = actives.filter((c) => c.status === "accepted");
   const etatDuService = etatEffectif(dispo); // ce qui est réellement en vigueur aujourd'hui
 
+  const estPatron = ficheDeCeCompte.role === "patron";
   const onglets = [
     { id: "traiter", libelle: "À traiter", Icone: IconeCloche, nombre: aTraiter.length },
     { id: "planning", libelle: "Planning", Icone: IconeCalendrier },
+    ...(estPatron ? [{ id: "caisse", libelle: "Caisse", Icone: IconeEuro }] : []), // la caisse n'est visible que du patron
     { id: "appli", libelle: "Appli", Icone: IconeAppli },
   ];
 
@@ -298,8 +327,10 @@ function Espace() {
         )}
 
         {onglet === "planning" && courses && (
-          <Planning planning={planning} historique={courses.historique} maintenant={maintenant} onAction={agir} userId={userId} role={ficheDeCeCompte.role} />
+          <Planning planning={planning} historique={courses.historique} maintenant={maintenant} onAction={agir} onEncaisser={encaisser} userId={userId} role={ficheDeCeCompte.role} />
         )}
+
+        {onglet === "caisse" && estPatron && <Caisse version={versionCaisse} maintenant={maintenant} onChange={charger} />}
 
         {onglet === "appli" && (
           <Appli email={session.user.email} role={ficheDeCeCompte.role} nom={ficheDeCeCompte.display_name}>
@@ -321,7 +352,7 @@ function Espace() {
       )}
 
       <nav aria-label="Navigation de l'espace chauffeur" className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e2e6e3] bg-white pb-[env(safe-area-inset-bottom,0px)]">
-        <div className="mx-auto grid max-w-[520px] grid-cols-3">
+        <div className="mx-auto grid max-w-[520px]" style={{ gridTemplateColumns: `repeat(${onglets.length}, minmax(0, 1fr))` }}>
           {onglets.map(({ id, libelle, Icone, nombre }) => (
             <button
               key={id}

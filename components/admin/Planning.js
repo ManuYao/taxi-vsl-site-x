@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { heureParis, jourParis, libelleJour } from "@/lib/paris";
 import { Details, Puce, Trajet, lienTel } from "./CarteCourse";
+import Encaisser from "./Encaisser";
 import { IconeTelephone } from "./icones";
 
 const STATUT = { refused: "Refusée", cancelled: "Annulée", done: "Terminée", accepted: "Acceptée", pending: "À traiter" };
@@ -38,7 +39,7 @@ function Annulation({ course, onAction }) {
   );
 }
 
-function Ligne({ course, maintenant, calme = false, onAction, peutAnnuler = false }) {
+function Ligne({ course, maintenant, calme = false, onAction, peutAnnuler = false, onEncaisser, peutEncaisser = false }) {
   const quand = new Date(course.pickup_at);
   return (
     <article className={`grid grid-cols-[auto_1fr] gap-3 rounded-[14px] border-l-4 bg-white p-3.5 ${calme ? "border-[#c9d1cc]" : "border-pri"}`}>
@@ -56,6 +57,7 @@ function Ligne({ course, maintenant, calme = false, onAction, peutAnnuler = fals
             </a>
           )}
         </div>
+        {!calme && peutEncaisser && <Encaisser course={course} onEncaisser={onEncaisser} />}
         {!calme && peutAnnuler && <Annulation course={course} onAction={onAction} />}
         {calme && <p className="text-[13px] font-bold text-[#5a6366]">{STATUT[course.status]} · {libelleJour(quand, maintenant)}</p>}
       </div>
@@ -63,10 +65,12 @@ function Ligne({ course, maintenant, calme = false, onAction, peutAnnuler = fals
   );
 }
 
-// Courses acceptées à venir, groupées par jour, puis l'historique (passées, refusées, annulées).
-export default function Planning({ planning, historique, maintenant, onAction, userId, role }) {
-  const aVenir = planning.filter((c) => new Date(c.pickup_at) >= new Date(maintenant.getTime() - 2 * 3600_000));
-  const passees = planning.filter((c) => !aVenir.includes(c));
+// En haut : les courses faites, à encaisser. Puis les courses acceptées à venir, groupées par jour.
+// Enfin l'historique (terminées, refusées, annulées).
+export default function Planning({ planning, historique, maintenant, onAction, onEncaisser, userId, role }) {
+  const aEncaisser = planning.filter((c) => new Date(c.pickup_at) <= maintenant).reverse(); // la plus récente d'abord
+  const aVenir = planning.filter((c) => new Date(c.pickup_at) > maintenant);
+  const mesCourses = (c) => role === "patron" || c.accepted_by === userId;
   const jours = [];
   for (const c of aVenir) {
     const cle = jourParis(new Date(c.pickup_at));
@@ -74,11 +78,21 @@ export default function Planning({ planning, historique, maintenant, onAction, u
     if (dernier?.cle === cle) dernier.courses.push(c);
     else jours.push({ cle, courses: [c] });
   }
-  const anciennes = [...passees, ...historique];
+  const anciennes = historique;
 
   return (
     <div className="flex flex-col gap-3">
-      {jours.length === 0 && (
+      {aEncaisser.length > 0 && (
+        <section className="flex flex-col gap-2 rounded-[18px] bg-[#fff4d6] p-2.5">
+          <h2 className="px-1.5 pt-1 text-[13px] font-bold uppercase tracking-[.06em] text-[#8a5a00]">
+            À encaisser <Puce>{aEncaisser.length}</Puce>
+          </h2>
+          {aEncaisser.map((c) => (
+            <Ligne key={c.id} course={c} maintenant={maintenant} onAction={onAction} onEncaisser={onEncaisser} peutAnnuler={mesCourses(c)} peutEncaisser={mesCourses(c)} />
+          ))}
+        </section>
+      )}
+      {jours.length === 0 && aEncaisser.length === 0 && (
         <p className="rounded-[18px] bg-white p-6 text-center text-[#5a6366]">Aucune course acceptée à venir.</p>
       )}
       {jours.map(({ cle, courses }) => (
@@ -87,7 +101,7 @@ export default function Planning({ planning, historique, maintenant, onAction, u
             {libelleJour(new Date(courses[0].pickup_at), maintenant)} <Puce>{courses.length}</Puce>
           </h2>
           {courses.map((c) => (
-            <Ligne key={c.id} course={c} maintenant={maintenant} onAction={onAction} peutAnnuler={role === "patron" || c.accepted_by === userId} />
+            <Ligne key={c.id} course={c} maintenant={maintenant} onAction={onAction} peutAnnuler={mesCourses(c)} />
           ))}
         </section>
       ))}

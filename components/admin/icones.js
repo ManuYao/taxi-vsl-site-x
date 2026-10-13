@@ -35,6 +35,13 @@ export const IconeAppli = ({ className = "size-6" }) => (
   </svg>
 );
 
+export const IconeEuro = ({ className = "size-6" }) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M15.5 8.5a4.5 4.5 0 1 0 0 7M7.5 11h5M7.5 13.5h5" />
+  </svg>
+);
+
 export const IconeVoiture = ({ className = "size-6" }) => (
   <svg {...base} className={className}>
     <path d="M5 17h14M6 17l1.5-6h9L18 17M7 17v2M17 17v2M10 11l1-3h2l1 3" />
