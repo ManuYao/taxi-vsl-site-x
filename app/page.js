@@ -1,16 +1,17 @@
-import site from "@/site.config";
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import Tiles from "@/components/Tiles";
+import MobileBar from "@/components/MobileBar";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-3xl p-6">
-      <h1 className="text-3xl font-bold text-pri">{site.nom}</h1>
-      <p className="tbd mt-3">Site en construction autour de {site.base.ville}.</p>
-      <a
-        href={`tel:${site.telephone.lien}`}
-        className="mt-6 inline-flex min-h-[52px] items-center rounded-full bg-pri px-8 font-bold text-white hover:bg-pri-hover"
-      >
-        Appeler {site.telephone.affiche}
-      </a>
-    </main>
+    <>
+      <Header />
+      <main id="top" className="pb-24 sm:pb-0">
+        <Hero />
+        <Tiles />
+      </main>
+      <MobileBar />
+    </>
   );
 }

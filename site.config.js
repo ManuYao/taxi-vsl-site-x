@@ -7,6 +7,14 @@ const site = {
   whatsapp: "33652446068",
   // Liste de départ issue de la maquette, à valider avec le client
   communes: ["Montargis", "Amilly", "Chalette-sur-Loing", "Villemandeur", "Pannes", "Châlette"],
+  // Infos affichées sur le site. Tout est provisoire (.tbd) tant que le client n'a pas confirmé.
+  infos: {
+    horaires: "7j/7, 5 h – 23 h",
+    zone: "10 à 20 km autour",
+    paiement: "Carte, espèces, tiers payant",
+    zoneCourte: "Montargis et alentours",
+  },
+  exemplePrix: { trajet: "Montargis → Orly", montant: "≈ 218 €" }, // exemple fictif du héros
   tarifs: {
     // Provisoires : à confirmer avec le client
     priseEnCharge: 3.0,
