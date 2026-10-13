@@ -9,6 +9,7 @@ import AdresseInput from "./AdresseInput";
 import DatePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
 import PrixEstime from "./PrixEstime";
+import ServiceFerme from "./ServiceFerme";
 import Turnstile, { CLE_PUBLIQUE_TURNSTILE } from "./Turnstile";
 import useEstimation from "./useEstimation";
 
@@ -41,13 +42,35 @@ function Champ({ id, label, facultatif, className = "", ...props }) {
 export default function BookingForm() {
   const pret = useDansLeNavigateur();
   const [session, setSession] = useState(0); // « Faire une autre demande » recrée un formulaire tout neuf
-  if (!pret) {
+  const [fermeture, setFermeture] = useState(null); // réservations fermées, apprises pendant l'envoi
+  const dispo = useDisponibilite(pret);
+
+  if (!pret || dispo.statut === "chargement") {
     return <div className="min-h-[640px] rounded-3xl bg-white" aria-busy="true" />;
   }
-  return <Formulaire key={session} onNouvelle={() => setSession((s) => s + 1)} />;
+  if (fermeture || dispo.statut === "ferme") return <ServiceFerme info={fermeture ?? dispo.info} />;
+  return <Formulaire key={session} onNouvelle={() => setSession((s) => s + 1)} onFerme={setFermeture} />;
 }
 
-function Formulaire({ onNouvelle }) {
+// Le patron peut fermer les réservations en ligne (hors ligne, vacances) : on le demande au serveur à l'arrivée.
+// En cas de doute (réseau, panne), on affiche le formulaire : le serveur refusera de toute façon si c'est fermé.
+function useDisponibilite(actif) {
+  const [etat, setEtat] = useState({ statut: "chargement", info: null });
+  useEffect(() => {
+    if (!actif) return;
+    const ctrl = new AbortController();
+    fetch("/api/disponibilite", { cache: "no-store", signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((j) => setEtat(j.ouvert === false ? { statut: "ferme", info: j } : { statut: "ok", info: null }))
+      .catch((e) => {
+        if (e?.name !== "AbortError") setEtat({ statut: "ok", info: null });
+      });
+    return () => ctrl.abort();
+  }, [actif]);
+  return etat;
+}
+
+function Formulaire({ onNouvelle, onFerme }) {
   const [today] = useState(() => noon(new Date()));
   const [maintenant] = useState(() => new Date().getHours());
   // Une demande = un identifiant : si le client appuie deux fois sur « Envoyer », le serveur ne l'enregistre qu'une fois.
@@ -172,6 +195,11 @@ function Formulaire({ onNouvelle }) {
         body: JSON.stringify(demande),
       });
       const donnees = await reponse.json().catch(() => ({}));
+      if (reponse.status === 409 && donnees.ferme) {
+        // Les réservations viennent d'être fermées : on remplace le formulaire par le message
+        onFerme({ etat: "offline", message: donnees.message ?? "" });
+        return;
+      }
       if (reponse.ok) {
         const rel = relatif(date, today);
         setEnvoyee({

@@ -17,6 +17,7 @@ import { creerLimiteur, ipDuClient, lireTexteLimite } from "@/lib/http";
 import { verifierTurnstile } from "@/lib/turnstile";
 import { envoyerTelegram } from "@/lib/telegram";
 import { envoyerPush } from "@/lib/push";
+import { lireDisponibilite } from "@/lib/disponibilite-serveur";
 import { destinatairesAlertes, envoyerMail } from "@/lib/mail";
 import { supabaseServeur } from "@/lib/supabase";
 
@@ -59,6 +60,15 @@ export async function POST(request) {
 
     // Champ piège : seul un robot le remplit. On répond « OK » sans rien enregistrer, pour ne pas l'aider à s'adapter.
     if (d.piege) return Response.json({ ok: true, prix: null }, { headers: SANS_CACHE });
+
+    // Réservations fermées (hors ligne ou vacances) : on le dit clairement et on renvoie vers le téléphone
+    const dispo = await lireDisponibilite();
+    if (!dispo.ouvert) {
+      return Response.json(
+        { erreur: "Les réservations en ligne sont fermées pour le moment. Appelez-nous.", ferme: true, message: dispo.message },
+        { status: 409, headers: SANS_CACHE },
+      );
+    }
 
     // Anti-spam Turnstile
     const verif = await verifierTurnstile(d.jeton, ip);

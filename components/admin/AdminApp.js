@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
+import { etatEffectif } from "@/lib/disponibilite";
 import { heureParis, libelleJour } from "@/lib/paris";
 import useDansLeNavigateur from "../useDansLeNavigateur";
 import Appli from "./Appli";
@@ -9,6 +10,7 @@ import BlocNotifications from "./BlocNotifications";
 import ChoisirMotDePasse from "./ChoisirMotDePasse";
 import CarteCourse from "./CarteCourse";
 import Connexion from "./Connexion";
+import Disponibilite from "./Disponibilite";
 import Planning from "./Planning";
 import { IconeAppli, IconeCalendrier, IconeCloche } from "./icones";
 
@@ -31,6 +33,7 @@ function Espace() {
   const [session, setSession] = useState(undefined); // undefined : on regarde ; null : pas connecté
   const [fiche, setFiche] = useState(null); // { userId, data } : fiche d'équipe de la personne connectée
   const [courses, setCourses] = useState(null); // { actives, historique }
+  const [dispo, setDispo] = useState(null); // ligne « availability » (null : pas lue, ou table absente)
   const [problemeReseau, setProblemeReseau] = useState(false);
   const [onglet, setOnglet] = useState("traiter");
   const [maintenant, setMaintenant] = useState(() => new Date());
@@ -50,6 +53,7 @@ function Espace() {
         // Déconnexion : rien ne doit rester de la personne précédente (onglet, courses, messages)
         setOnglet("traiter");
         setCourses(null);
+        setDispo(null);
         setFiche(null);
         setNouvelle(null);
         setMessage(null);
@@ -78,9 +82,10 @@ function Espace() {
 
   const charger = useCallback(async () => {
     const sb = supabaseNavigateur();
-    const [actives, anciennes] = await Promise.all([
+    const [actives, anciennes, disponibilite] = await Promise.all([
       sb.from("bookings").select("*").in("status", ["pending", "accepted"]).order("pickup_at", { ascending: true }).limit(200),
       sb.from("bookings").select("*").in("status", ["refused", "cancelled", "done"]).order("pickup_at", { ascending: false }).limit(30),
+      sb.from("availability").select("*").eq("id", 1).maybeSingle(),
     ]);
     if (actives.error || anciennes.error) {
       setProblemeReseau(true);
@@ -88,7 +93,32 @@ function Espace() {
     }
     setProblemeReseau(false);
     setCourses({ actives: actives.data, historique: anciennes.data });
+    setDispo(disponibilite.error ? null : disponibilite.data); // sans la table (migration pas encore lancée) : en ligne
   }, []);
+
+  // Change l'état du service (en ligne / hors ligne / vacances) : le serveur vérifie, enregistre et prévient l'équipe
+  const changerDispo = useCallback(
+    async (valeurs) => {
+      const jeton = (await supabaseNavigateur().auth.getSession()).data.session?.access_token;
+      try {
+        const reponse = await fetch("/api/disponibilite", {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${jeton}`, "Content-Type": "application/json" },
+          body: JSON.stringify(valeurs),
+        });
+        const json = await reponse.json().catch(() => ({}));
+        setMessage(
+          reponse.ok
+            ? { ton: "ok", texte: json.ouvert ? "Réservations en ligne ouvertes." : "Réservations en ligne fermées." }
+            : { ton: "erreur", texte: json.erreur ?? "Changement impossible pour le moment." },
+        );
+      } catch {
+        setMessage({ ton: "erreur", texte: "Pas de connexion. Réessayez dans un instant." });
+      }
+      await charger();
+    },
+    [charger],
+  );
 
   // Liste en direct : temps réel + relecture régulière + relecture au retour sur l'appli
   useEffect(() => {
@@ -193,6 +223,7 @@ function Espace() {
   const actives = courses?.actives ?? [];
   const aTraiter = actives.filter((c) => c.status === "pending");
   const planning = actives.filter((c) => c.status === "accepted");
+  const etatDuService = etatEffectif(dispo); // ce qui est réellement en vigueur aujourd'hui
 
   const onglets = [
     { id: "traiter", libelle: "À traiter", Icone: IconeCloche, nombre: aTraiter.length },
@@ -204,7 +235,18 @@ function Espace() {
     <div className="mx-auto flex min-h-dvh max-w-[520px] flex-col">
       <header className="flex items-center justify-between gap-3 px-4 pt-5 pb-2">
         <h1 className="font-title text-[26px] font-extrabold leading-tight">{TITRES[onglet]}</h1>
-        {onglet === "traiter" && courses && <span className="text-[15px] text-[#5a6366]">{aTraiter.length} à traiter</span>}
+        {onglet === "traiter" && courses && (
+          // Un appui ouvre ou ferme les réservations en ligne (en vacances : mène aux réglages de la disponibilité)
+          <button
+            type="button"
+            onClick={() => (etatDuService.etat === "vacances" ? setOnglet("appli") : changerDispo({ state: etatDuService.ouvert ? "offline" : "online", message: "" }))}
+            aria-label={etatDuService.ouvert ? "Réservations en ligne ouvertes : appuyer pour les fermer" : "Réservations en ligne fermées : appuyer pour les ouvrir"}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-3.5 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3] ${etatDuService.ouvert ? "text-pri" : "text-[#b3261e]"}`}
+          >
+            <span aria-hidden="true">{etatDuService.ouvert ? "🟢" : "🔴"}</span>
+            {etatDuService.etat === "online" ? "En ligne" : etatDuService.etat === "offline" ? "Hors ligne" : "Vacances"}
+          </button>
+        )}
       </header>
 
       {nouvelle && aTraiter.some((c) => c.id === nouvelle.id) && (
@@ -260,6 +302,7 @@ function Espace() {
 
         {onglet === "appli" && (
           <Appli email={session.user.email} role={ficheDeCeCompte.role} nom={ficheDeCeCompte.display_name}>
+            <Disponibilite key={dispo?.updated_at ?? "aucune"} dispo={dispo} onEnregistrer={changerDispo} />
             <BlocNotifications />
           </Appli>
         )}
