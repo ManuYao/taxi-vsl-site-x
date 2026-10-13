@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import site from "@/site.config";
 import { addDays, noon, pad2, relatif, sameDay, jourLong, ymd } from "@/lib/dates";
 import { CheckIcon, PhoneIcon } from "../Icons";
+import useDansLeNavigateur from "../useDansLeNavigateur";
 import AdresseInput from "./AdresseInput";
 import DatePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
@@ -37,11 +38,6 @@ function Champ({ id, label, facultatif, className = "", ...props }) {
 
 // Le formulaire dépend de la date du jour : on ne l'affiche qu'une fois dans le navigateur
 // (sinon la page pré-calculée afficherait « Aujourd'hui » avec la date du jour de la construction).
-const jamais = () => () => {};
-function useDansLeNavigateur() {
-  return useSyncExternalStore(jamais, () => true, () => false);
-}
-
 export default function BookingForm() {
   const pret = useDansLeNavigateur();
   const [session, setSession] = useState(0); // « Faire une autre demande » recrée un formulaire tout neuf
