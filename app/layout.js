@@ -17,7 +17,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr" className={`${sora.variable} ${atkinson.variable}`}>
-      <body>{children}</body>
+      {/* suppressHydrationWarning : des extensions de navigateur ajoutent des attributs sur <body> avant le chargement de React */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
