@@ -1,8 +1,9 @@
-// PATCH /api/bookings/:id : le chauffeur accepte ou refuse une demande.
+// PATCH /api/bookings/:id : le chauffeur accepte ou refuse une demande, ou annule une course déjà acceptée.
 //
 // Réservé à l'équipe : en-tête Authorization: Bearer <jeton de connexion>.
-// Corps JSON : { action: "accepter" | "refuser" }
-// Réponse 200 : { ok: true, statut: "accepted" | "refused" }
+// Corps JSON : { action: "accepter" | "refuser" | "annuler" }
+//   « annuler » : seulement une course acceptée, par le patron ou par la personne qui l'a prise.
+// Réponse 200 : { ok: true, statut: "accepted" | "refused" | "cancelled" }
 // Erreur : { erreur: "message court en français" } avec le code 400, 401, 403, 404, 409, 413, 415 ou 500
 //
 // « Premier qui accepte » : la mise à jour ne réussit que si la course est encore « pending ».
@@ -19,7 +20,13 @@ import { envoyerMail } from "@/lib/mail";
 import { envoyerTelegram } from "@/lib/telegram";
 
 const SANS_CACHE = { "Cache-Control": "no-store" };
-const schema = z.object({ action: z.enum(["accepter", "refuser"]) });
+const schema = z.object({ action: z.enum(["accepter", "refuser", "annuler"]) });
+// action -> { statut en base, statut attendu avant, statut pour le message au client, texte pour l'équipe }
+const ACTIONS = {
+  accepter: { vers: "accepted", depuis: "pending", client: "acceptee", equipe: "✅ Course prise" },
+  refuser: { vers: "refused", depuis: "pending", client: "refusee", equipe: "❌ Course refusée" },
+  annuler: { vers: "cancelled", depuis: "accepted", client: "annulee", equipe: "🚫 Course annulée" },
+};
 const identifiant = z.uuid();
 
 const erreur = (message, status) => Response.json({ erreur: message }, { status, headers: SANS_CACHE });
@@ -46,19 +53,30 @@ export async function PATCH(request, { params }) {
     }
     const lecture = schema.safeParse(corps);
     if (!lecture.success) return erreur("Action inconnue.", 400);
-    const accepte = lecture.data.action === "accepter";
+    const action = lecture.data.action;
+    const regle = ACTIONS[action];
 
     const base = supabaseServeur();
+    // Annuler une course acceptée : réservé au patron et à la personne qui l'a prise (pas aux autres chauffeurs)
+    if (action === "annuler") {
+      const { data: actuelle } = await base.from("bookings").select("status, accepted_by").eq("id", id).maybeSingle();
+      if (!actuelle) return erreur("Course introuvable.", 404);
+      if (actuelle.status !== "accepted") return erreur("Seule une course acceptée peut être annulée.", 409);
+      if (equipe.role !== "patron" && actuelle.accepted_by !== equipe.user.id) {
+        return erreur("Seule la personne qui a pris la course, ou le patron, peut l'annuler.", 403);
+      }
+    }
+
     const maintenant = new Date().toISOString();
+    const modification =
+      action === "accepter"
+        ? { status: regle.vers, accepted_by: equipe.user.id, decided_at: maintenant }
+        : { status: regle.vers, decided_at: maintenant };
     const { data: course, error } = await base
       .from("bookings")
-      .update(
-        accepte
-          ? { status: "accepted", accepted_by: equipe.user.id, decided_at: maintenant }
-          : { status: "refused", decided_at: maintenant },
-      )
+      .update(modification)
       .eq("id", id)
-      .eq("status", "pending") // seule une course encore à traiter peut être acceptée ou refusée
+      .eq("status", regle.depuis) // la mise à jour ne réussit que si la course est encore dans l'état attendu
       .select("id, status, customer_name, customer_phone, customer_email, from_label, to_label, pickup_at")
       .maybeSingle();
     if (error) {
@@ -76,13 +94,13 @@ export async function PATCH(request, { params }) {
       const quand = dateLisibleParis(new Date(course.pickup_at));
       const qui = equipe.nom || equipe.user.email;
       await envoyerTelegram(
-        `${accepte ? "✅ Course prise" : "❌ Course refusée"} par <b>${echapper(qui)}</b>\n${echapper(course.customer_name)} · ${echapper(quand)}\n${echapper(course.from_label)} → ${echapper(course.to_label)}`,
+        `${regle.equipe} par <b>${echapper(qui)}</b>\n${echapper(course.customer_name)} · ${echapper(quand)}\n${echapper(course.from_label)} → ${echapper(course.to_label)}`,
       );
       // L'e-mail au client n'est possible qu'avec un domaine vérifié chez Resend (RESEND_FROM) :
       // l'expéditeur d'essai de Resend n'écrit qu'au propriétaire du compte.
       if (course.customer_email && process.env.RESEND_FROM) {
         const mail = composerReponseClient({
-          accepte,
+          statut: regle.client,
           course: { nom: course.customer_name, pickupAt: course.pickup_at, depart: course.from_label, arrivee: course.to_label },
           entreprise: { nom: site.nom, telephone: site.telephone.affiche },
         });

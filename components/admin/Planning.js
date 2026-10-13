@@ -1,12 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import { heureParis, jourParis, libelleJour } from "@/lib/paris";
 import { Details, Puce, Trajet, lienTel } from "./CarteCourse";
 import { IconeTelephone } from "./icones";
 
 const STATUT = { refused: "Refusée", cancelled: "Annulée", done: "Terminée", accepted: "Acceptée", pending: "À traiter" };
 
-function Ligne({ course, maintenant, calme = false }) {
+// Bouton d'annulation en deux appuis : « Annuler la course » puis « Oui, annuler » (pour éviter les faux appuis)
+function Annulation({ course, onAction }) {
+  const [confirmer, setConfirmer] = useState(false);
+  const [enCours, setEnCours] = useState(false);
+
+  async function annuler() {
+    setEnCours(true);
+    await onAction(course.id, "annuler");
+    setEnCours(false);
+    setConfirmer(false);
+  }
+
+  if (!confirmer) {
+    return (
+      <button type="button" onClick={() => setConfirmer(true)} className="min-h-11 self-start rounded-full bg-bg px-4 text-[14px] font-bold text-[#b3261e] shadow-[inset_0_0_0_1.5px_#e2e6e3]">
+        Annuler la course
+      </button>
+    );
+  }
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <button type="button" disabled={enCours} onClick={annuler} className="min-h-11 rounded-xl bg-[#b3261e] text-[14px] font-bold text-white disabled:opacity-60">
+        {enCours ? "…" : "Oui, annuler"}
+      </button>
+      <button type="button" disabled={enCours} onClick={() => setConfirmer(false)} className="min-h-11 rounded-xl bg-bg text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3]">
+        Non, garder
+      </button>
+    </div>
+  );
+}
+
+function Ligne({ course, maintenant, calme = false, onAction, peutAnnuler = false }) {
   const quand = new Date(course.pickup_at);
   return (
     <article className={`grid grid-cols-[auto_1fr] gap-3 rounded-[14px] border-l-4 bg-white p-3.5 ${calme ? "border-[#c9d1cc]" : "border-pri"}`}>
@@ -24,6 +56,7 @@ function Ligne({ course, maintenant, calme = false }) {
             </a>
           )}
         </div>
+        {!calme && peutAnnuler && <Annulation course={course} onAction={onAction} />}
         {calme && <p className="text-[13px] font-bold text-[#5a6366]">{STATUT[course.status]} · {libelleJour(quand, maintenant)}</p>}
       </div>
     </article>
@@ -31,7 +64,7 @@ function Ligne({ course, maintenant, calme = false }) {
 }
 
 // Courses acceptées à venir, groupées par jour, puis l'historique (passées, refusées, annulées).
-export default function Planning({ planning, historique, maintenant }) {
+export default function Planning({ planning, historique, maintenant, onAction, userId, role }) {
   const aVenir = planning.filter((c) => new Date(c.pickup_at) >= new Date(maintenant.getTime() - 2 * 3600_000));
   const passees = planning.filter((c) => !aVenir.includes(c));
   const jours = [];
@@ -53,7 +86,9 @@ export default function Planning({ planning, historique, maintenant }) {
           <h2 className="mt-2 px-0.5 text-[13px] font-bold uppercase tracking-[.06em] text-[#5a6366]">
             {libelleJour(new Date(courses[0].pickup_at), maintenant)} <Puce>{courses.length}</Puce>
           </h2>
-          {courses.map((c) => <Ligne key={c.id} course={c} maintenant={maintenant} />)}
+          {courses.map((c) => (
+            <Ligne key={c.id} course={c} maintenant={maintenant} onAction={onAction} peutAnnuler={role === "patron" || c.accepted_by === userId} />
+          ))}
         </section>
       ))}
 

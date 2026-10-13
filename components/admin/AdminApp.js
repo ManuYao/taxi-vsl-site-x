@@ -155,7 +155,8 @@ function Espace() {
         });
         const json = await reponse.json().catch(() => ({}));
         if (reponse.ok) {
-          setMessage({ ton: "ok", texte: action === "accepter" ? "Course acceptée. Elle est dans votre planning." : "Course refusée." });
+          const textes = { accepter: "Course acceptée. Elle est dans votre planning.", refuser: "Course refusée.", annuler: "Course annulée." };
+          setMessage({ ton: "ok", texte: textes[action] });
         } else {
           setMessage({ ton: "erreur", texte: json.erreur ?? "Action impossible pour le moment." });
         }
@@ -254,7 +255,7 @@ function Espace() {
         )}
 
         {onglet === "planning" && courses && (
-          <Planning planning={planning} historique={courses.historique} maintenant={maintenant} />
+          <Planning planning={planning} historique={courses.historique} maintenant={maintenant} onAction={agir} userId={userId} role={ficheDeCeCompte.role} />
         )}
 
         {onglet === "appli" && (

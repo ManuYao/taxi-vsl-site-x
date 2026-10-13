@@ -148,11 +148,11 @@ export default function Equipe() {
         <form onSubmit={ajouter} className="flex flex-col gap-3" noValidate>
           <div className="flex flex-col gap-1.5">
             <label htmlFor="equipe-nom" className="text-base font-bold">Prénom</label>
-            <input id="equipe-nom" value={nom} onChange={(e) => setNom(e.target.value)} className={champ} autoComplete="off" placeholder="Ex. Alex" />
+            <input id="equipe-nom" value={nom} onChange={(e) => setNom(e.target.value)} className={champ} autoComplete="off" placeholder="Ex. Yaoblé" />
           </div>
           <div className="flex flex-col gap-1.5">
             <label htmlFor="equipe-email" className="text-base font-bold">Adresse e-mail</label>
-            <input id="equipe-email" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} className={champ} autoComplete="off" placeholder="alex@exemple.fr" />
+            <input id="equipe-email" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} className={champ} autoComplete="off" placeholder="yaoble@exemple.fr" />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <button type="submit" disabled={enCours} className="min-h-[52px] rounded-xl bg-pri font-bold text-white disabled:opacity-60">{enCours ? "Création…" : "Créer l'accès"}</button>
