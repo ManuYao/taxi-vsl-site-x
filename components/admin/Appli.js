@@ -1,6 +1,8 @@
 "use client";
 
 import { supabaseNavigateur } from "@/lib/supabase-browser";
+import ChoisirMotDePasse from "./ChoisirMotDePasse";
+import Equipe from "./Equipe";
 
 const etapes = "flex flex-col gap-1 rounded-[14px] bg-bg p-3.5 text-[15px] leading-snug";
 
@@ -23,7 +25,11 @@ export default function Appli({ email, role, nom, children }) {
         </button>
       </section>
 
+      <ChoisirMotDePasse email={email} />
+
       {children}
+
+      {role === "patron" && <Equipe />}
 
       <section className="flex flex-col gap-3 rounded-[18px] bg-white p-4">
         <h2 className="font-title text-lg font-bold">Installer l&apos;appli sur le téléphone</h2>

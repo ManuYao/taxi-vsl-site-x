@@ -6,6 +6,7 @@ import { heureParis, libelleJour } from "@/lib/paris";
 import useDansLeNavigateur from "../useDansLeNavigateur";
 import Appli from "./Appli";
 import BlocNotifications from "./BlocNotifications";
+import ChoisirMotDePasse from "./ChoisirMotDePasse";
 import CarteCourse from "./CarteCourse";
 import Connexion from "./Connexion";
 import Planning from "./Planning";
@@ -44,7 +45,17 @@ function Espace() {
   useEffect(() => {
     const sb = supabaseNavigateur();
     sb.auth.getSession().then(({ data }) => setSession(data.session ?? null));
-    const { data: abonnement } = sb.auth.onAuthStateChange((_evenement, s) => setSession(s ?? null));
+    const { data: abonnement } = sb.auth.onAuthStateChange((evenement, s) => {
+      if (evenement === "SIGNED_OUT") {
+        // Déconnexion : rien ne doit rester de la personne précédente (onglet, courses, messages)
+        setOnglet("traiter");
+        setCourses(null);
+        setFiche(null);
+        setNouvelle(null);
+        setMessage(null);
+      }
+      setSession(s ?? null);
+    });
     return () => abonnement.subscription.unsubscribe();
   }, []);
 
@@ -171,6 +182,11 @@ function Espace() {
         </button>
       </Plein>
     );
+  }
+
+  // Premier accès avec le mot de passe provisoire donné par le patron : on doit d'abord choisir le sien
+  if (session.user.user_metadata?.doit_changer_mdp) {
+    return <ChoisirMotDePasse obligatoire email={session.user.email} />;
   }
 
   const actives = courses?.actives ?? [];

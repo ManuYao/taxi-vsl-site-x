@@ -10,6 +10,10 @@ const site = {
   // Mettre false (ou retirer le composant TbdToggle) avant la mise en ligne.
   boutonTbd: true,
 
+  // Connexion de l'espace chauffeur : e-mail + mot de passe. La connexion par code reçu par e-mail demande un serveur
+  // SMTP personnalisé chez Supabase (donc un nom de domaine vérifié) : à passer à true seulement une fois celui-ci en place.
+  admin: { codeParEmail: false },
+
   // Liste de départ issue de la maquette, à valider avec le client
   communes: [
     "Montargis", "Amilly", "Châlette-sur-Loing", "Villemandeur", "Pannes", "Cepoy",
