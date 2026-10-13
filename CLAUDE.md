@@ -1,4 +1,4 @@
-# CLAUDE.md — Site taxi / VSL (secteur Montargis)
+# CLAUDE.md — Site taxi / VSL (modèle réutilisable, premier client : secteur Montargis)
 
 ## Contexte
 - Site d'une entreprise de taxi, VSL conventionné CPAM et VTC du secteur Montargis (Loiret, 45). Client : un membre de ma famille.
