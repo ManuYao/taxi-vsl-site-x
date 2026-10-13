@@ -50,6 +50,11 @@ h1, h2, h3 {
   outline-offset: 2px;
 }
 
+/* Bouton de démo : cache les contours provisoires */
+html[data-tbd="off"] .tbd {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
