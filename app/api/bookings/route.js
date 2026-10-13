@@ -18,6 +18,7 @@ import { verifierTurnstile } from "@/lib/turnstile";
 import { envoyerTelegram } from "@/lib/telegram";
 import { envoyerPush } from "@/lib/push";
 import { lireDisponibilite } from "@/lib/disponibilite-serveur";
+import { lireTarifs } from "@/lib/reglages-serveur";
 import { destinatairesAlertes, envoyerMail } from "@/lib/mail";
 import { supabaseServeur } from "@/lib/supabase";
 
@@ -90,7 +91,7 @@ export async function POST(request) {
     if (avecCoordonnees(d.depart) && avecCoordonnees(d.arrivee) && (!d.arret || avecCoordonnees(d.arret))) {
       try {
         const trajet = await itineraire(d.arret ? [d.depart, d.arret, d.arrivee] : [d.depart, d.arrivee]);
-        const prix = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date: d.date, heure: d.heure, tarifs: site.tarifs });
+        const prix = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date: d.date, heure: d.heure, tarifs: await lireTarifs() });
         estimation = {
           km: Math.max(1, Math.round(trajet.km)),
           minutes: trajet.minutes,

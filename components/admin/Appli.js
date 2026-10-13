@@ -3,6 +3,7 @@
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import ChoisirMotDePasse from "./ChoisirMotDePasse";
 import Equipe from "./Equipe";
+import MonSite from "./MonSite";
 
 const etapes = "flex flex-col gap-1 rounded-[14px] bg-bg p-3.5 text-[15px] leading-snug";
 
@@ -28,6 +29,8 @@ export default function Appli({ email, role, nom, children }) {
       <ChoisirMotDePasse email={email} />
 
       {children}
+
+      {role === "patron" && <MonSite />}
 
       {role === "patron" && <Equipe />}
 

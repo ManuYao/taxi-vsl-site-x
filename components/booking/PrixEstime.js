@@ -1,4 +1,3 @@
-import site from "@/site.config";
 import { dureeLisible } from "@/lib/dates";
 
 // Bloc « Prix estimé » : visible avant l'envoi, avec la mention obligatoire.
@@ -34,7 +33,7 @@ export default function PrixEstime({ statut, resultat, conventionne, messageVide
           </>
         )}
         <span>Estimation. Le taximètre fait foi.</span>
-        {!site.tarifs.confirmes && <span className="tbd self-start sm:self-end">Tarifs fictifs, à confirmer</span>}
+        {ok && !resultat.tarifsConfirmes && <span className="tbd self-start sm:self-end">Tarifs fictifs, à confirmer</span>}
       </div>
 
       {conventionne && <span className="w-full text-[15px] font-bold text-pri">Pris en charge selon votre prescription médicale.</span>}

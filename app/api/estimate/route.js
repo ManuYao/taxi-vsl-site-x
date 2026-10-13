@@ -7,7 +7,7 @@
 // Réponse 200 : { km, minutes, duree, prix, prixCents, tarif, approximatif, arret }
 // Erreur : { erreur: "message court en français" } avec le code 400, 413, 415, 429 ou 500
 import { z } from "zod";
-import site from "@/site.config";
+import { lireTarifs } from "@/lib/reglages-serveur";
 import { calculerPrix, lireDate, lireHeure } from "@/lib/pricing";
 import { itineraire } from "@/lib/routing";
 
@@ -126,7 +126,8 @@ export async function POST(request) {
 
     // Avec un arrêt, l'itinéraire passe par lui : départ→arrêt + arrêt→arrivée.
     const trajet = await itineraire(arret ? [depart, arret, arrivee] : [depart, arrivee]);
-    const prix = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date, heure, tarifs: site.tarifs });
+    const tarifs = await lireTarifs(); // ceux du patron, sinon ceux de site.config.js
+    const prix = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date, heure, tarifs });
 
     // km est arrondi au km pour l'affichage (« 107 km », comme la maquette) ; le prix, lui, est calculé au dixième de km.
     return Response.json(
@@ -139,6 +140,7 @@ export async function POST(request) {
         tarif: prix.tarif, // "jour" | "nuit"
         approximatif: trajet.approximatif, // true : ORS indisponible, estimation à vol d'oiseau
         arret: Boolean(arret),
+        tarifsConfirmes: tarifs.confirmes === true, // false : tarifs fictifs de démonstration
       },
       { headers: SANS_CACHE },
     );
