@@ -37,13 +37,16 @@ const site = {
     lointaines: [["Paris", 150, 22], ["Orléans", 16, 330], ["Gien", 190, 382], ["Sens", 544, 120]],
   },
 
-  // Destinations fréquentes (distance estimée depuis la base)
+  // Destinations fréquentes : affichées dans la zone desservie (distance estimée depuis la base)
+  // et en raccourcis sous le champ Arrivée. `libelle` = texte mis dans le champ (par défaut `nom`).
+  // Le service d'adresses ne connaît pas tous les aéroports ni toutes les gares de Paris : d'où ces raccourcis.
   destinations: [
-    { nom: "Gare de Montargis", lat: 48.004, lon: 2.737 },
+    { nom: "Gare de Montargis", lat: 48.0067, lon: 2.7428 },
+    { nom: "Hôpital", libelle: "Centre hospitalier de l'agglomération montargoise, Amilly", lat: 47.9973, lon: 2.7726 },
     { nom: "Orléans", lat: 47.902, lon: 1.909 },
     { nom: "Paris", lat: 48.857, lon: 2.352 },
-    { nom: "Orly", lat: 48.726, lon: 2.365 },
-    { nom: "Roissy-CDG", lat: 49.009, lon: 2.548 },
+    { nom: "Orly", libelle: "Aéroport d'Orly", lat: 48.726, lon: 2.365 },
+    { nom: "Roissy-CDG", libelle: "Aéroport Roissy-Charles-de-Gaulle", lat: 49.009, lon: 2.548 },
   ],
 
   // Infos affichées sur le site. Tout est provisoire (.tbd) tant que le client n'a pas confirmé.

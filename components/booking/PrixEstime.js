@@ -2,7 +2,7 @@ import site from "@/site.config";
 import { dureeLisible } from "@/lib/dates";
 
 // Bloc « Prix estimé » : visible avant l'envoi, avec la mention obligatoire.
-export default function PrixEstime({ statut, resultat, conventionne }) {
+export default function PrixEstime({ statut, resultat, conventionne, messageVide }) {
   const ok = statut === "ok";
   return (
     <div
@@ -17,7 +17,9 @@ export default function PrixEstime({ statut, resultat, conventionne }) {
       </div>
 
       <div className="flex flex-col gap-0.5 text-[15px] tabular-nums text-[#5a6366] sm:text-right">
-        {statut === "vide" && <span>Indiquez le départ et l&apos;arrivée en choisissant une adresse de la liste.</span>}
+        {statut === "vide" && (
+          <span>{messageVide ?? "Indiquez le départ et l'arrivée en choisissant une adresse de la liste."}</span>
+        )}
         {statut === "calcul" && <span>Calcul en cours…</span>}
         {statut === "erreur" && <span>Prix indisponible pour le moment. Le chauffeur vous le confirmera.</span>}
         {ok && (
