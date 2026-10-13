@@ -50,8 +50,8 @@ h1, h2, h3 {
   outline-offset: 2px;
 }
 
-/* Bouton de démo : cache les contours provisoires */
-html[data-tbd="off"] .tbd {
+/* Bouton de démo : les contours provisoires ne s'affichent que si on les a demandés (data-tbd="on") */
+html:not([data-tbd="on"]) .tbd {
   outline: none;
 }
 
