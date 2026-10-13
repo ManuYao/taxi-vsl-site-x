@@ -200,6 +200,30 @@ function Espace() {
     [charger],
   );
 
+  // Ajouter soi-même une course (client qui appelle) : elle est créée directement « acceptée », au nom de la personne connectée
+  const ajouterCourse = useCallback(
+    async (corps) => {
+      const jeton = (await supabaseNavigateur().auth.getSession()).data.session?.access_token;
+      try {
+        const reponse = await fetch("/api/bookings/manuel", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${jeton}`, "Content-Type": "application/json" },
+          body: JSON.stringify(corps),
+        });
+        const json = await reponse.json().catch(() => ({}));
+        if (reponse.ok) {
+          setMessage({ ton: "ok", texte: "Course ajoutée au planning." });
+          await charger();
+          return { ok: true };
+        }
+        return { ok: false, erreur: json.erreur ?? "Impossible d'ajouter la course." };
+      } catch {
+        return { ok: false, erreur: "Pas de connexion. Réessayez dans un instant." };
+      }
+    },
+    [charger],
+  );
+
   // Encaisser une course : montant + mode de paiement. La course passe à « terminée ».
   const encaisser = useCallback(
     async (bookingId, mode, montant) => {
@@ -327,7 +351,7 @@ function Espace() {
         )}
 
         {onglet === "planning" && courses && (
-          <Planning planning={planning} historique={courses.historique} maintenant={maintenant} onAction={agir} onEncaisser={encaisser} userId={userId} role={ficheDeCeCompte.role} />
+          <Planning planning={planning} historique={courses.historique} maintenant={maintenant} onAction={agir} onEncaisser={encaisser} onAjouter={ajouterCourse} userId={userId} role={ficheDeCeCompte.role} />
         )}
 
         {onglet === "caisse" && estPatron && <Caisse version={versionCaisse} maintenant={maintenant} onChange={charger} />}

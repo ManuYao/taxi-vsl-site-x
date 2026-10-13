@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { heureParis, jourParis, libelleJour } from "@/lib/paris";
 import { Details, Puce, Trajet, lienTel } from "./CarteCourse";
+import AjouterCourse from "./AjouterCourse";
 import Encaisser from "./Encaisser";
 import { IconeTelephone } from "./icones";
 
@@ -67,7 +68,13 @@ function Ligne({ course, maintenant, calme = false, onAction, peutAnnuler = fals
 
 // En haut : les courses faites, à encaisser. Puis les courses acceptées à venir, groupées par jour.
 // Enfin l'historique (terminées, refusées, annulées).
-export default function Planning({ planning, historique, maintenant, onAction, onEncaisser, userId, role }) {
+export default function Planning({ planning, historique, maintenant, onAction, onEncaisser, onAjouter, userId, role }) {
+  const [ajout, setAjout] = useState(false);
+  async function ajouter(corps) {
+    const r = await onAjouter(corps);
+    if (r.ok) setAjout(false);
+    return r;
+  }
   const aEncaisser = planning.filter((c) => new Date(c.pickup_at) <= maintenant).reverse(); // la plus récente d'abord
   const aVenir = planning.filter((c) => new Date(c.pickup_at) > maintenant);
   const mesCourses = (c) => role === "patron" || c.accepted_by === userId;
@@ -82,6 +89,11 @@ export default function Planning({ planning, historique, maintenant, onAction, o
 
   return (
     <div className="flex flex-col gap-3">
+      {ajout ? (
+        <AjouterCourse onAjouter={ajouter} onFermer={() => setAjout(false)} />
+      ) : (
+        <button type="button" onClick={() => setAjout(true)} className="min-h-[52px] rounded-xl bg-soft font-bold text-pri">+ Ajouter une course</button>
+      )}
       {aEncaisser.length > 0 && (
         <section className="flex flex-col gap-2 rounded-[18px] bg-[#fff4d6] p-2.5">
           <h2 className="px-1.5 pt-1 text-[13px] font-bold uppercase tracking-[.06em] text-[#8a5a00]">

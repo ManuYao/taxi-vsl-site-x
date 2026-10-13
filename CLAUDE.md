@@ -96,6 +96,18 @@ site.config.js            nom, téléphone, WhatsApp, couleurs, villes, tarifs p
 - **V1** : site une page, réservation avec arrêt intermédiaire et prix estimé, notifications chauffeur (push + secours), accepter/refuser, e-mail de confirmation, pages SEO par ville, mentions légales.
 - **V2** : SMS client, réductions et codes promo depuis l'admin, paiement ou acompte en ligne, plusieurs chauffeurs ou véhicules, bouton disponible/indisponible, version anglaise, statistiques.
 
+## État d'avancement (mis à jour le 14/10/2026)
+- **Fait et testé** : site public une page ; formulaire de réservation (adresses IGN, date/heure maison, prix estimé serveur via OpenRouteService, promotions et code promo, anti-spam Turnstile + champ piège) ; base Supabase (`supabase/schema.sql` puis `supabase/migrations/002-bloc-f.sql`, à lancer dans l'éditeur SQL) ; alertes Telegram + e-mail + notifications push ; espace chauffeur `/admin` (PWA, connexion e-mail + mot de passe, courses à traiter, accepter / refuser / annuler, planning, ajout d'une course à la main, encaissement, caisse + export CSV, équipe, disponibilité, tarifs et promotions modifiables par le patron).
+- **Variables d'environnement** : voir `.env.example` ; les vraies valeurs sont dans `.env.local` (jamais dans `.env.example`).
+- **Pas encore fait** : pages légales (mentions légales, confidentialité, cookies), pages SEO par commune, e-mails aux clients (il faut un domaine vérifié chez Resend : variable `RESEND_FROM`), connexion par code e-mail (SMTP Supabase, désactivée : `site.admin.codeParEmail`), photos et textes réels du client, test sur vrais téléphones, mise en ligne définitive (Netlify : le plan gratuit est limité à 300 crédits, 15 par déploiement), régénération des clés secrètes passées par le chat avant la mise en ligne, suppression du bouton de démo (`boutonTbd: false`), style et effets.
+- Les tests automatiques sont dans `lib/*.test.js` (`node --test lib/*.test.js`).
+
+## À faire plus tard : style et effets (PAS maintenant)
+- Quand le fonctionnel est terminé, on reprendra le style et on ajoutera des effets.
+- **Espace chauffeur, onglet Appli** : donner un fond coloré différent aux sections (Disponibilité, Notifications, Mes tarifs, Promotions, Équipe…), un vert de la palette avec beaucoup de transparence, pour séparer les blocs et casser le « trop blanc ».
+- **Arrière-plans** : l'utilisateur veut un fond « cool » en motif CSS, à générer avec https://www.magicpattern.design/tools/css-backgrounds (aux couleurs de la palette vert forêt, discret pour garder la lisibilité : public âgé, fort contraste). À essayer sur le site public et l'espace chauffeur.
+- Ne pas le faire tant que l'utilisateur ne le demande pas.
+
 ## Infos à obtenir du client
 Nom commercial · numéro et WhatsApp (actuel : 06 52 44 60 68) · site, fiche Google ou Facebook existants · logo, couleurs, photos du véhicule · services réellement proposés · zone et horaires · tarif au km, prise en charge, minimum, tarifs nuit/week-end · conventionnement CPAM · associés et organisation · iPhone ou Android pour les notifications.
 

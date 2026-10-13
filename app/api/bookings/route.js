@@ -9,8 +9,7 @@
 //
 // Le prix est TOUJOURS recalculé ici : on ne fait jamais confiance à un prix envoyé par le navigateur.
 import site from "@/site.config";
-import { calculerPrix } from "@/lib/pricing";
-import { itineraire } from "@/lib/routing";
+import { estimerCourse } from "@/lib/estimation-serveur";
 import { dateLisibleParis, parisVersUtc } from "@/lib/paris";
 import { composerAlertes, formaterTelephone, messageErreurReservation, schemaReservation } from "@/lib/reservation";
 import { creerLimiteur, ipDuClient, lireTexteLimite } from "@/lib/http";
@@ -18,8 +17,6 @@ import { verifierTurnstile } from "@/lib/turnstile";
 import { envoyerTelegram } from "@/lib/telegram";
 import { envoyerPush } from "@/lib/push";
 import { lireDisponibilite } from "@/lib/disponibilite-serveur";
-import { lireTarifs } from "@/lib/reglages-serveur";
-import { avecPromotion } from "@/lib/promotions-serveur";
 import { destinatairesAlertes, envoyerMail } from "@/lib/mail";
 import { supabaseServeur } from "@/lib/supabase";
 
@@ -30,8 +27,6 @@ const schema = schemaReservation({ maxPassagers: site.reservation.maxPassagers }
 
 const erreur = (message, status, headers) =>
   Response.json({ erreur: message }, { status, headers: { ...SANS_CACHE, ...headers } });
-
-const avecCoordonnees = (l) => l?.lat !== undefined && l?.lon !== undefined;
 
 export async function POST(request) {
   try {
@@ -86,31 +81,9 @@ export async function POST(request) {
     if (pickup.getTime() < maintenant - 5 * 60_000) return erreur("Cette date et cette heure sont déjà passées.", 400);
     if (pickup.getTime() > maintenant + 366 * 86_400_000) return erreur("Cette date est trop lointaine. Appelez-nous.", 400);
 
-    // Prix estimé, calculé ici. Sans coordonnées (adresse écrite à la main), pas d'estimation : le chauffeur confirme.
-    // Un arrêt écrit à la main empêche aussi l'estimation, pour ne jamais donner un prix « sans arrêt » trompeur.
-    let estimation = null;
-    if (avecCoordonnees(d.depart) && avecCoordonnees(d.arrivee) && (!d.arret || avecCoordonnees(d.arret))) {
-      try {
-        const trajet = await itineraire(d.arret ? [d.depart, d.arret, d.arrivee] : [d.depart, d.arrivee]);
-        const calcule = calculerPrix({ km: trajet.km, minutes: trajet.minutes, date: d.date, heure: d.heure, tarifs: await lireTarifs() });
-        // Promotion éventuelle (automatique, ou avec le code saisi) : recalculée ici, jamais crue sur parole
-        const prix = await avecPromotion(calcule, { km: trajet.km, depart: d.depart.label, arrivee: d.arrivee.label, jour: d.date, code: d.codePromo });
-        estimation = {
-          km: Math.max(1, Math.round(trajet.km)),
-          minutes: trajet.minutes,
-          prix: prix.prix,
-          prixCents: prix.prixCents,
-          prixAvant: prix.avant,
-          prixAvantCents: prix.avantCents,
-          promo: prix.promo,
-          tarif: calcule.tarif,
-          duree: calcule.duree,
-          approximatif: trajet.approximatif,
-        };
-      } catch (e) {
-        console.error("[api/bookings] estimation impossible :", e instanceof Error ? e.message : e);
-      }
-    }
+    // Prix estimé, calculé ici (itinéraire réel, tarifs du patron, promotion). Sans coordonnées (adresse écrite à la main),
+    // pas d'estimation : le chauffeur confirme le prix.
+    const estimation = await estimerCourse({ depart: d.depart, arrivee: d.arrivee, arret: d.arret, date: d.date, heure: d.heure, codePromo: d.codePromo });
 
     // Enregistrement
     const telephone = formaterTelephone(d.telephone);

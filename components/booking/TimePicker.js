@@ -56,12 +56,13 @@ const caseOn = "!bg-pri !text-white !shadow-none";
 
 // Heure : un bouton avec une petite horloge, puis un panneau « une étape à la fois »
 // (moment de la journée → heure → minutes). Il se ferme après les minutes.
-export default function TimePicker({ today, maintenant, date, hour, minute, onChange }) {
+// permettrePasse : n'interdit pas les heures déjà passées aujourd'hui (le chauffeur peut noter une course qu'il vient de faire)
+export default function TimePicker({ today, maintenant, date, hour, minute, onChange, permettrePasse = false }) {
   const [ouvert, setOuvert] = useState(false);
   const [periode, setPeriode] = useState(periodeDe(hour));
   const [minutesVisibles, setMinutesVisibles] = useState(false);
 
-  const aujourdhui = sameDay(date, today);
+  const aujourdhui = !permettrePasse && sameDay(date, today);
   const p = PERIODES[periode];
 
   function basculer() {
