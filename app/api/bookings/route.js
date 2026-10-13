@@ -16,6 +16,7 @@ import { composerAlertes, formaterTelephone, messageErreurReservation, schemaRes
 import { creerLimiteur, ipDuClient, lireTexteLimite } from "@/lib/http";
 import { verifierTurnstile } from "@/lib/turnstile";
 import { envoyerTelegram } from "@/lib/telegram";
+import { envoyerPush } from "@/lib/push";
 import { destinatairesAlertes, envoyerMail } from "@/lib/mail";
 import { supabaseServeur } from "@/lib/supabase";
 
@@ -146,16 +147,24 @@ export async function POST(request) {
       refTrajet: d.refTrajet,
       estimation,
     });
-    const [telegram, mail] = await Promise.all([
+    const [telegram, mail, push] = await Promise.all([
       envoyerTelegram(alertes.telegram),
       envoyerMail({ a: destinatairesAlertes(), sujet: alertes.sujet, texte: alertes.texte, html: alertes.html }),
+      envoyerPush({
+        titre: "Nouvelle course",
+        texte: `${d.nom} · ${dateLisibleParis(pickup)} · ${d.depart.label} → ${d.arrivee.label}`,
+        url: "/admin",
+        tag: `course-${data.id}`,
+      }),
     ]);
-    if (!telegram.ok && !mail.ok) {
-      console.error(`[api/bookings] AUCUNE alerte envoyée pour la course ${data.id} (telegram : ${telegram.raison}, e-mail : ${mail.raison})`);
+    if (!telegram.ok && !mail.ok && !push.ok) {
+      console.error(
+        `[api/bookings] AUCUNE alerte envoyée pour la course ${data.id} (telegram : ${telegram.raison}, e-mail : ${mail.raison}, push : ${push.raison})`,
+      );
     }
     await base
       .from("bookings")
-      .update({ alerts: { telegram: telegram.ok, email: mail.ok } })
+      .update({ alerts: { telegram: telegram.ok, email: mail.ok, push: push.ok } })
       .eq("id", data.id)
       .then(({ error: e }) => e && console.error("[api/bookings] trace des alertes non enregistrée :", e.message));
 

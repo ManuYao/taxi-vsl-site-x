@@ -5,6 +5,7 @@ import { supabaseNavigateur } from "@/lib/supabase-browser";
 import { heureParis, libelleJour } from "@/lib/paris";
 import useDansLeNavigateur from "../useDansLeNavigateur";
 import Appli from "./Appli";
+import BlocNotifications from "./BlocNotifications";
 import CarteCourse from "./CarteCourse";
 import Connexion from "./Connexion";
 import Planning from "./Planning";
@@ -114,6 +115,16 @@ function Espace() {
       document.removeEventListener("visibilitychange", auRetour);
     };
   }, [acces, charger]);
+
+  // Un toucher sur une notification, appli déjà ouverte : le service worker nous prévient, on montre les courses à traiter
+  useEffect(() => {
+    if (!acces || !("serviceWorker" in navigator)) return;
+    const auClic = (evenement) => {
+      if (evenement.data?.type === "notification-clic") setOnglet("traiter");
+    };
+    navigator.serviceWorker.addEventListener("message", auClic);
+    return () => navigator.serviceWorker.removeEventListener("message", auClic);
+  }, [acces]);
 
   // Les messages disparaissent tout seuls
   useEffect(() => {
@@ -231,7 +242,9 @@ function Espace() {
         )}
 
         {onglet === "appli" && (
-          <Appli email={session.user.email} role={ficheDeCeCompte.role} nom={ficheDeCeCompte.display_name} />
+          <Appli email={session.user.email} role={ficheDeCeCompte.role} nom={ficheDeCeCompte.display_name}>
+            <BlocNotifications />
+          </Appli>
         )}
       </main>
 
