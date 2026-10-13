@@ -53,12 +53,13 @@ const site = {
     paiement: "Carte, espèces, tiers payant",
     zoneCourte: "Montargis et alentours",
   },
-  exemplePrix: { trajet: "Montargis → Orly", montant: "≈ 218 €" }, // exemple fictif du héros
+  exemplePrix: { trajet: "Montargis → Orly", montant: "≈ 212 €" }, // exemple du héros : ce que calcule le site avec les tarifs fictifs ci-dessous
 
   reservation: { maxPassagers: 4 }, // à confirmer selon le véhicule
 
   tarifs: {
-    // Fictifs : à confirmer avec le client
+    // Fictifs : à confirmer avec le client (passer `confirmes` à true une fois validés)
+    confirmes: false,
     priseEnCharge: 4.0,
     kmJour: 2.0,
     kmNuit: 2.5,
