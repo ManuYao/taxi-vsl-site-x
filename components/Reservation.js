@@ -1,6 +1,7 @@
 import site from "@/site.config";
 import { Container, SectionHead } from "./ui";
 import { PinIcon } from "./Icons";
+import BookingForm from "./booking/BookingForm";
 
 const etapes = [
   {
@@ -59,16 +60,7 @@ export default function Reservation() {
           </p>
         </div>
 
-        <div className="tbd rounded-3xl bg-white p-8 text-ink shadow-[0_30px_60px_-30px_rgba(0,0,0,.6)]">
-          <p className="font-title text-xl font-bold">Formulaire de réservation</p>
-          <p className="mt-2 text-[#5a6366]">En cours de construction (étape suivante du projet).</p>
-          <a
-            href={`tel:${site.telephone.lien}`}
-            className="mt-5 inline-flex min-h-[58px] items-center justify-center rounded-full bg-pri px-[26px] text-[19px] font-bold text-white no-underline hover:bg-pri-hover"
-          >
-            En attendant, appelez le {site.telephone.affiche}
-          </a>
-        </div>
+        <BookingForm />
       </Container>
     </section>
   );

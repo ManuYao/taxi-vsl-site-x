@@ -55,6 +55,8 @@ const site = {
   },
   exemplePrix: { trajet: "Montargis → Orly", montant: "≈ 218 €" }, // exemple fictif du héros
 
+  reservation: { maxPassagers: 4 }, // à confirmer selon le véhicule
+
   tarifs: {
     // Fictifs : à confirmer avec le client
     priseEnCharge: 4.0,
