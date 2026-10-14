@@ -76,18 +76,18 @@ export default function Zones() {
   return (
     <section id="zones" className="scroll-mt-4 py-16 sm:py-[88px]">
       <Container className="grid items-center gap-9 min-[960px]:grid-cols-[1.25fr_.75fr] min-[960px]:gap-14">
-        <div className="reveal min-w-0 rounded-[28px] bg-white p-3">
+        <div data-rv="gauche" className="min-w-0 rounded-[28px] bg-white p-3">
           <Carte />
         </div>
-        <div>
-          <SectionHead eyebrow="Zone desservie" title={`Près de chez vous, jusqu'à ${site.carte.rayonKm} km`}>
+        <div data-rv="droite">
+          <SectionHead rv={false} eyebrow="Zone desservie" title={`Près de chez vous, jusqu'à ${site.carte.rayonKm} km`}>
             <p className="text-[19px] text-[#5a6366]">
               Et partout en France sur réservation. <span className="tbd">Liste des communes à confirmer.</span>
             </p>
           </SectionHead>
           <div className="flex flex-col gap-3">
             {dests.map((d) => (
-              <div key={d.nom} className="reveal carte-fx flex items-center justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5">
+              <div key={d.nom} className="carte-fx flex items-center justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5">
                 <b className="text-lg">{d.nom}</b>
                 <span className="whitespace-nowrap tabular-nums text-[#5a6366]">{d.dist}</span>
               </div>

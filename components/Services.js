@@ -111,8 +111,8 @@ export default function Services() {
       <Container>
         <SectionHead eyebrow="Services" title="Où que vous alliez" center />
         <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
-          {services.map(({ Dessin, titre, texte }) => (
-            <article key={titre} className="reveal carte-fx flex min-w-0 flex-col overflow-hidden rounded-3xl bg-white">
+          {services.map(({ Dessin, titre, texte }, i) => (
+            <article key={titre} data-rv="haut" style={{ "--rv-delay": `${i * 130}ms` }} className="carte-fx flex min-w-0 flex-col overflow-hidden rounded-3xl bg-white">
               <Dessin />
               <div className="flex flex-col gap-1.5 px-[22px] pt-5 pb-6">
                 <h3 className="text-[22px] font-bold">{titre}</h3>

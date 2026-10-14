@@ -91,18 +91,17 @@ h1, h2, h3 {
   70%, 100% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--pri) 0%, transparent); }
 }
 
-/* Apparition au défilement : CSS seul, sans JavaScript. Si le navigateur ne sait pas le faire, tout reste visible. */
-@keyframes apparait {
-  from { opacity: 0; translate: 0 28px; }
-  to { opacity: 1; translate: 0 0; }
+/* Apparition au défilement (voir components/Apparitions.js) : l'élément est caché (rv-pret) puis glisse en place (rv-vu). */
+.rv-pret {
+  opacity: 0;
 }
-
-@supports (animation-timeline: view()) {
-  .reveal {
-    animation: apparait linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 45%;
-  }
+.rv-pret[data-rv="haut"] { translate: 0 34px; }
+.rv-pret[data-rv="gauche"] { translate: -70px 0; }
+.rv-pret[data-rv="droite"] { translate: 70px 0; }
+.rv-pret[data-rv="zoom"] { scale: 0.93; }
+.rv-vu {
+  transition: opacity 0.9s ease, translate 1s cubic-bezier(0.2, 0.7, 0.2, 1), scale 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--rv-delay, 0s);
 }
 
 /* Carte qui se soulève au survol */
@@ -118,7 +117,7 @@ h1, h2, h3 {
 
 /* Héros : la voiture arrive en glissant, les bulles flottent doucement */
 @keyframes entree {
-  from { opacity: 0; transform: translateX(-70px); }
+  from { opacity: 0; transform: translateX(-130px); }
   to { opacity: 1; transform: none; }
 }
 
@@ -128,7 +127,7 @@ h1, h2, h3 {
 }
 
 .anim-entree {
-  animation: entree 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: entree 1.9s cubic-bezier(0.16, 0.8, 0.3, 1) 0.25s both;
 }
 
 .anim-flotte {
@@ -155,7 +154,7 @@ html:not([data-tbd="on"]) .tbd {
     transition-duration: 0.01ms !important;
   }
   /* Les animations en boucle ou liées au défilement sont coupées net (sinon elles clignoteraient) */
-  .reveal, .anim-entree, .anim-flotte, .fx-halo, .fx-sonne {
+  .anim-entree, .anim-flotte, .fx-halo, .fx-sonne {
     animation: none !important;
   }
 }

@@ -11,6 +11,7 @@ import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 import TbdToggle from "@/components/TbdToggle";
+import Apparitions from "@/components/Apparitions";
 import JsonLd from "@/components/JsonLd";
 import { donneesEntreprise } from "@/lib/seo";
 import site from "@/site.config";
@@ -35,6 +36,7 @@ export default function Home() {
       </main>
       <Footer />
       <MobileBar />
+      <Apparitions />
       {site.boutonTbd && <TbdToggle />}
     </>
   );

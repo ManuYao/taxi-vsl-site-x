@@ -38,10 +38,10 @@ export default function Apropos() {
   return (
     <section id="nous" className="scroll-mt-4 pb-16 sm:pb-[88px]">
       <Container className="grid items-center gap-9 min-[900px]:grid-cols-2 min-[900px]:gap-16">
-        <div className="reveal overflow-hidden rounded-[28px] bg-soft">
+        <div data-rv="gauche" className="overflow-hidden rounded-[28px] bg-soft">
           <Scene />
         </div>
-        <div className="flex min-w-0 flex-col gap-4">
+        <div data-rv="droite" className="flex min-w-0 flex-col gap-4">
           <span className="text-sm font-bold uppercase tracking-[.1em] text-pri">Qui sommes-nous</span>
           <h2 className="text-[clamp(30px,4.4vw,46px)] font-extrabold leading-[1.06] tracking-tight text-balance">
             Une entreprise d&apos;ici<span className="tbd align-middle font-body text-xs font-bold uppercase tracking-wide">Texte à venir</span>

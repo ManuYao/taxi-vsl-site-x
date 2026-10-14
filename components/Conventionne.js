@@ -48,7 +48,7 @@ export default function Conventionne() {
         <SectionHead eyebrow="Transport conventionné" title="Un transport prescrit ? C'est simple" center />
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
           {etapes.map((e, i) => (
-            <div key={e.titre} className="reveal flex flex-col items-center gap-3.5 text-center">
+            <div key={e.titre} data-rv={["gauche", "haut", "droite"][i]} className="flex flex-col items-center gap-3.5 text-center">
               <div className="relative flex size-28 items-center justify-center rounded-full bg-soft">
                 <span className="absolute top-0 right-0 flex size-[34px] items-center justify-center rounded-full bg-pri font-title text-base font-extrabold text-white">
                   {i + 1}
