@@ -7,7 +7,7 @@ import { IconeVoiture } from "./icones";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-white px-4 py-3 text-lg shadow-[inset_0_0_0_1.5px_#c9d1cc] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
-const bouton = "min-h-[58px] w-full rounded-full bg-pri px-6 text-[19px] font-bold text-white hover:bg-pri-hover disabled:opacity-60";
+const bouton = "fx fx-pri min-h-[58px] w-full rounded-full bg-pri px-6 text-[19px] font-bold text-white hover:bg-pri-hover disabled:opacity-60";
 
 // Connexion : e-mail + mot de passe (comptes créés par le patron). Le code reçu par e-mail reste disponible
 // si site.admin.codeParEmail est vrai (il faut alors un serveur SMTP chez Supabase).

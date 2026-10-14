@@ -40,10 +40,10 @@ export default function Header() {
         <a
           href={`tel:${site.telephone.lien}`}
           aria-label={`Appeler le ${site.telephone.affiche}`}
-          className="inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-soft p-1 font-bold tabular-nums text-dark no-underline sm:py-2 sm:pr-[18px] sm:pl-2"
+          className="fx inline-flex items-center gap-2.5 whitespace-nowrap rounded-full bg-soft p-1 font-bold tabular-nums text-dark no-underline sm:py-2 sm:pr-[18px] sm:pl-2"
         >
           <span className="inline-flex size-9 items-center justify-center rounded-full bg-pri">
-            <PhoneIcon className="size-[18px] text-white" />
+            <PhoneIcon className="fx-sonne size-[18px] text-white" />
           </span>
           <span className="hidden sm:inline">{site.telephone.affiche}</span>
         </a>

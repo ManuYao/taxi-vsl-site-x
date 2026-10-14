@@ -5,7 +5,7 @@ import { PhoneIcon, ChatIcon } from "./Icons";
 // Barre fixe en bas sur mobile : Appeler · WhatsApp · Réserver
 export default function MobileBar() {
   const btn =
-    "inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full p-2.5 text-base font-bold leading-tight no-underline";
+    "fx inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full p-2.5 text-base font-bold leading-tight no-underline";
   return (
     <nav
       aria-label="Actions rapides"

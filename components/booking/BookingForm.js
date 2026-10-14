@@ -248,13 +248,13 @@ function Formulaire({ onNouvelle, onFerme }) {
           <button
             type="button"
             onClick={onNouvelle}
-            className="inline-flex min-h-[58px] items-center justify-center rounded-full border-2 border-ink bg-white px-[26px] text-[19px] font-bold hover:bg-soft"
+            className="fx fx-contour inline-flex min-h-[58px] items-center justify-center rounded-full border-2 border-ink bg-white px-[26px] text-[19px] font-bold hover:bg-soft"
           >
             Faire une autre demande
           </button>
           <a
             href={`tel:${site.telephone.lien}`}
-            className="inline-flex min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-pri px-[26px] text-[19px] font-bold text-white no-underline hover:bg-pri-hover"
+            className="fx fx-pri inline-flex min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-pri px-[26px] text-[19px] font-bold text-white no-underline hover:bg-pri-hover"
           >
             <PhoneIcon className="size-[22px]" />
             {site.telephone.affiche}
@@ -415,7 +415,7 @@ function Formulaire({ onNouvelle, onFerme }) {
           {proposerAppel && (
             <a
               href={`tel:${site.telephone.lien}`}
-              className="inline-flex min-h-[52px] items-center gap-2.5 self-start rounded-full bg-pri px-6 text-lg font-bold text-white no-underline hover:bg-pri-hover"
+              className="fx fx-pri inline-flex min-h-[52px] items-center gap-2.5 self-start rounded-full bg-pri px-6 text-lg font-bold text-white no-underline hover:bg-pri-hover"
             >
               <PhoneIcon className="size-5" />
               Appeler le {site.telephone.affiche}
@@ -427,7 +427,7 @@ function Formulaire({ onNouvelle, onFerme }) {
       <button
         type="submit"
         disabled={enCours}
-        className={`min-h-[58px] w-full rounded-full bg-pri px-[26px] py-3.5 text-[19px] font-bold text-white hover:bg-pri-hover disabled:opacity-70 ${pleine}`}
+        className={`fx fx-pri min-h-[58px] w-full rounded-full bg-pri px-[26px] py-3.5 text-[19px] font-bold text-white hover:bg-pri-hover disabled:opacity-70 ${pleine}`}
       >
         {enCours ? "Envoi en cours…" : "Envoyer ma demande"}
       </button>

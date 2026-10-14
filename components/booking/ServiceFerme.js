@@ -24,11 +24,11 @@ export default function ServiceFerme({ info }) {
         {vacances ? "Pour une urgence ou une question, vous pouvez toujours nous appeler." : "Vous pouvez nous appeler : on réserve pour vous."}
       </p>
       <div className="flex flex-wrap gap-3">
-        <a href={`tel:${site.telephone.lien}`} className="inline-flex min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-pri px-[26px] text-[19px] font-bold text-white no-underline hover:bg-pri-hover">
+        <a href={`tel:${site.telephone.lien}`} className="fx fx-pri inline-flex min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-pri px-[26px] text-[19px] font-bold text-white no-underline hover:bg-pri-hover">
           <PhoneIcon className="size-[22px]" />
           {site.telephone.affiche}
         </a>
-        <a href={`https://wa.me/${site.whatsapp}`} className="inline-flex min-h-[58px] items-center justify-center gap-2.5 rounded-full border-2 border-ink px-[26px] text-[19px] font-bold text-ink no-underline hover:bg-soft">
+        <a href={`https://wa.me/${site.whatsapp}`} className="fx fx-contour inline-flex min-h-[58px] items-center justify-center gap-2.5 rounded-full border-2 border-ink px-[26px] text-[19px] font-bold text-ink no-underline hover:bg-soft">
           <ChatIcon className="size-[22px]" />
           WhatsApp
         </a>

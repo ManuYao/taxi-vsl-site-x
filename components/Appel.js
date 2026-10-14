@@ -15,7 +15,7 @@ export default function Appel() {
           </div>
           <a
             href={`tel:${site.telephone.lien}`}
-            className="relative inline-flex min-h-[58px] items-center justify-center rounded-full bg-white px-[26px] py-3.5 text-[19px] font-bold tabular-nums text-dark no-underline"
+            className="fx fx-contour relative inline-flex min-h-[58px] items-center justify-center rounded-full bg-white px-[26px] py-3.5 text-[19px] font-bold tabular-nums text-dark no-underline"
           >
             {site.telephone.affiche}
           </a>

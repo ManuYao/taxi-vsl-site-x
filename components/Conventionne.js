@@ -43,7 +43,7 @@ const etapes = [
 
 export default function Conventionne() {
   return (
-    <section id="cpam" className="scroll-mt-4 bg-white py-16 sm:py-[88px]">
+    <section id="cpam" className="scroll-mt-4 bg-white/80 py-16 sm:py-[88px]">
       <Container>
         <SectionHead eyebrow="Transport conventionné" title="Un transport prescrit ? C'est simple" center />
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">

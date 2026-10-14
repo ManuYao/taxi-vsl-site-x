@@ -9,7 +9,7 @@ export default function Hero() {
   const communes = site.communes.filter((c) => c.nom !== site.base.ville).slice(0, 5).map((c) => c.nom);
 
   return (
-    <section className="overflow-hidden bg-white pt-6 pb-14">
+    <section className="overflow-hidden pt-6 pb-14">
       <div className="mx-auto grid max-w-[1160px] items-center gap-8 px-4 sm:px-8 min-[960px]:grid-cols-[1fr_1.1fr] min-[960px]:gap-6">
         <div className="flex min-w-0 flex-col gap-[22px]">
           <span className="text-sm font-bold uppercase tracking-[.1em] text-pri">
@@ -24,14 +24,14 @@ export default function Hero() {
           <div className="flex flex-wrap gap-3">
             <a
               href={`tel:${site.telephone.lien}`}
-              className="inline-flex min-h-[58px] items-center justify-center gap-2.5 whitespace-nowrap rounded-full border-2 border-transparent bg-pri px-[26px] py-3.5 text-[19px] font-bold leading-tight text-white no-underline hover:bg-pri-hover"
+              className="fx fx-pri fx-halo inline-flex min-h-[58px] items-center justify-center gap-2.5 whitespace-nowrap rounded-full border-2 border-transparent bg-pri px-[26px] py-3.5 text-[19px] font-bold leading-tight text-white no-underline hover:bg-pri-hover"
             >
-              <PhoneIcon className="size-[22px]" />
+              <PhoneIcon className="fx-sonne size-[22px]" />
               {site.telephone.affiche}
             </a>
             <Link
               href="/#reserver"
-              className="inline-flex min-h-[58px] items-center justify-center whitespace-nowrap rounded-full border-2 border-ink bg-white px-[26px] py-3.5 text-[19px] font-bold leading-tight text-ink no-underline hover:bg-soft"
+              className="fx fx-contour inline-flex min-h-[58px] items-center justify-center whitespace-nowrap rounded-full border-2 border-ink bg-white px-[26px] py-3.5 text-[19px] font-bold leading-tight text-ink no-underline hover:bg-soft"
             >
               Réserver en ligne
             </Link>
