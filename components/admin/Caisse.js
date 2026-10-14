@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import { MODES, eurosTxt } from "@/lib/caisse";
 import { jourParis, libelleJour } from "@/lib/paris";
+import Confirmation from "./Confirmation";
+import { SqueletteCaisse } from "./Squelette";
 
 async function jeton() {
   return (await supabaseNavigateur().auth.getSession()).data.session?.access_token;
@@ -30,7 +32,8 @@ const petit = "min-h-11 rounded-full bg-white px-4 text-[14px] font-bold shadow-
 export default function Caisse({ version, maintenant, onChange }) {
   const [donnees, setDonnees] = useState(null);
   const [erreur, setErreur] = useState("");
-  const [confirmer, setConfirmer] = useState(null); // { id, action }
+  const [confirmer, setConfirmer] = useState(null); // { paiement, action } : fenêtre de confirmation ouverte
+  const [enCours, setEnCours] = useState(false);
   const [mois, setMois] = useState(() => jourParis(new Date()).slice(0, 7));
   const [export_, setExport] = useState({ enCours: false, message: "" });
 
@@ -51,12 +54,15 @@ export default function Caisse({ version, maintenant, onChange }) {
     return () => clearTimeout(t);
   }, [charger, version]);
 
-  async function agir(paiement, action) {
-    if (confirmer?.id !== paiement.id || confirmer?.action !== action) return setConfirmer({ id: paiement.id, action });
-    setConfirmer(null);
+  // Appelé par la fenêtre de confirmation : elle reste ouverte avec « … » jusqu'à ce que les chiffres soient relus
+  async function agir() {
+    const { paiement, action } = confirmer;
+    setEnCours(true);
     const r = action === "recu" ? await appel("PATCH", { id: paiement.id, action: "recu" }) : await appel("DELETE", { id: paiement.id });
     if (!r.ok) setErreur(r.erreur ?? "Action impossible.");
     await charger();
+    setEnCours(false);
+    setConfirmer(null);
     onChange?.();
   }
 
@@ -79,7 +85,14 @@ export default function Caisse({ version, maintenant, onChange }) {
     }
   }
 
-  if (!donnees) return <p className="py-10 text-center text-[#5a6366]">{erreur || "Chargement de la caisse…"}</p>;
+  if (!donnees) return erreur ? <p role="alert" className="rounded-2xl bg-[#fdecea] p-3.5 text-[15px] font-bold text-[#b3261e]">{erreur}</p> : <SqueletteCaisse />;
+  const vise = confirmer?.paiement;
+  const montant = vise ? eurosTxt(vise.amount_cents) : "";
+  const client = vise?.bookings?.customer_name ?? "ce client";
+  const fenetre =
+    confirmer?.action === "recu"
+      ? { titre: `${montant} reçus ?`, message: `Le tiers payant de ${client} est bien arrivé sur votre compte.`, libelle: "Oui, c'est reçu", danger: false }
+      : { titre: `Annuler ce paiement de ${montant} ?`, message: `Le paiement de ${client} est retiré de la caisse. La course redevient à encaisser.`, libelle: "Oui, annuler le paiement", danger: true };
   const { resume, duJour, enAttente, aEncaisser } = donnees;
   const maxSept = Math.max(1, ...resume.sept.map((j) => j.total));
   const nomJour = (jour) => new Date(`${jour}T12:00:00`).toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "");
@@ -121,11 +134,11 @@ export default function Caisse({ version, maintenant, onChange }) {
                 <p className="[overflow-wrap:anywhere]"><b>{p.bookings?.customer_name ?? "Client"}</b> · <span className="tabular-nums">{eurosTxt(p.amount_cents)}</span></p>
                 <p className="text-[14px] text-[#5a6366] [overflow-wrap:anywhere]">{p.bookings ? `${p.bookings.from_label} → ${p.bookings.to_label}` : ""}</p>
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" onClick={() => agir(p, "recu")} className={`${petit} ${confirmer?.id === p.id && confirmer?.action === "recu" ? "!bg-pri !text-white" : ""}`}>
-                    {confirmer?.id === p.id && confirmer?.action === "recu" ? "Confirmer : reçu" : "Marquer comme reçu"}
+                  <button type="button" onClick={() => setConfirmer({ paiement: p, action: "recu" })} className={petit}>
+                    Marquer comme reçu
                   </button>
-                  <button type="button" onClick={() => agir(p, "annuler")} className={`${petit} text-[#b3261e] ${confirmer?.id === p.id && confirmer?.action === "annuler" ? "!bg-[#b3261e] !text-white" : ""}`}>
-                    {confirmer?.id === p.id && confirmer?.action === "annuler" ? "Confirmer ?" : "Annuler la saisie"}
+                  <button type="button" onClick={() => setConfirmer({ paiement: p, action: "annuler" })} className={`${petit} text-[#b3261e]`}>
+                    Annuler la saisie
                   </button>
                 </div>
               </li>
@@ -164,8 +177,8 @@ export default function Caisse({ version, maintenant, onChange }) {
                 <p className="min-w-0 text-[15px] [overflow-wrap:anywhere]"><b>{p.bookings?.customer_name ?? "Client"}</b><span className="block text-[13px] text-[#5a6366]">{MODES[p.mode]}</span></p>
                 <div className="flex flex-none items-center gap-2">
                   <b className="tabular-nums">{eurosTxt(p.amount_cents)}</b>
-                  <button type="button" onClick={() => agir(p, "annuler")} aria-label="Annuler ce paiement" className={`${petit} px-3 ${confirmer?.id === p.id && confirmer?.action === "annuler" ? "!bg-[#b3261e] !text-white" : "text-[#b3261e]"}`}>
-                    {confirmer?.id === p.id && confirmer?.action === "annuler" ? "Sûr ?" : "×"}
+                  <button type="button" onClick={() => setConfirmer({ paiement: p, action: "annuler" })} aria-label="Annuler ce paiement" className={`${petit} px-3 text-[#b3261e]`}>
+                    ×
                   </button>
                 </div>
               </li>
@@ -184,6 +197,8 @@ export default function Caisse({ version, maintenant, onChange }) {
         </button>
         {export_.message && <p role="status" className="text-[14px] font-bold text-pri">{export_.message}</p>}
       </section>
+
+      <Confirmation ouvert={Boolean(confirmer)} {...fenetre} enCours={enCours} onConfirmer={agir} onAnnuler={() => setConfirmer(null)} />
     </div>
   );
 }

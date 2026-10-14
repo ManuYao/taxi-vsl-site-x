@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
+import Confirmation, { Points } from "./Confirmation";
 import Depliable from "./Depliable";
+import { SqueletteListe } from "./Squelette";
 import { IconeEquipe } from "./icones";
 
 const champ =
@@ -37,7 +39,7 @@ export default function Equipe({ onMonCompte }) {
   const [ouvert, setOuvert] = useState(false); // formulaire d'ajout
   const [enCours, setEnCours] = useState(false);
   const [occupe, setOccupe] = useState(null); // identifiant de la personne en cours de modification
-  const [aConfirmer, setAConfirmer] = useState(null); // { id, action } : un deuxième appui valide
+  const [aConfirmer, setAConfirmer] = useState(null); // { personne, action } : la fenêtre de confirmation est ouverte
   const [secret, setSecret] = useState(null); // { nom, email, motDePasse, lien } : montré une seule fois
   const [copie, setCopie] = useState(false);
 
@@ -75,27 +77,25 @@ export default function Equipe({ onMonCompte }) {
     setOccupe(personne.id);
     setErreur("");
     const r = await appel("PATCH", { id: personne.id, action: "changer-niveau", niveau: nouveau });
-    setOccupe(null);
     if (!r.ok) setErreur(r.erreur ?? "Action impossible.");
-    charger();
+    await charger();
+    setOccupe(null);
   }
 
-  async function agir(personne, action) {
-    if (aConfirmer?.id !== personne.id || aConfirmer?.action !== action) {
-      setAConfirmer({ id: personne.id, action });
-      return;
-    }
-    setAConfirmer(null);
+  // Appelé par la fenêtre de confirmation : elle reste ouverte avec « … » jusqu'à la réponse
+  async function agir() {
+    const { personne, action } = aConfirmer;
     setOccupe(personne.id);
     setErreur("");
     const r = await appel("PATCH", { id: personne.id, action });
+    if (r.ok) await charger();
     setOccupe(null);
+    setAConfirmer(null);
     if (!r.ok) return setErreur(r.erreur ?? "Action impossible.");
     if (r.motDePasse) {
       setSecret({ nom: personne.nom, email: personne.email, motDePasse: r.motDePasse, lien: `${window.location.origin}/admin` });
       setCopie(false);
     }
-    charger();
   }
 
   async function copier(texte) {
@@ -107,8 +107,21 @@ export default function Equipe({ onMonCompte }) {
     }
   }
 
-  const libelleAction = { supprimer: "Supprimer", "nouveau-mot-de-passe": "Nouveau mot de passe" };
-  const texteConfirmation = { supprimer: "Supprimer pour de bon ?", "nouveau-mot-de-passe": "Confirmer ?" };
+  const cible = aConfirmer?.personne;
+  const fenetre = {
+    supprimer: {
+      titre: `Supprimer ${cible?.nom || "cette personne"} ?`,
+      message: "Son accès est effacé pour de bon : elle ne pourra plus se connecter. Les courses déjà faites restent dans l'historique.",
+      libelle: "Oui, supprimer",
+      danger: true,
+    },
+    "nouveau-mot-de-passe": {
+      titre: `Nouveau mot de passe pour ${cible?.nom || "cette personne"} ?`,
+      message: "Son mot de passe actuel ne marchera plus. Un mot de passe provisoire s'affichera : vous le lui transmettrez.",
+      libelle: "Oui, créer un mot de passe",
+      danger: false,
+    },
+  }[aConfirmer?.action ?? "supprimer"];
   const boutonPetit = "min-h-11 rounded-full px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3] disabled:opacity-60";
 
   return (
@@ -131,7 +144,7 @@ export default function Equipe({ onMonCompte }) {
         </div>
       )}
 
-      {equipe === null && !erreur && <p className="text-[#5a6366]">Chargement…</p>}
+      {equipe === null && !erreur && <SqueletteListe lignes={2} label="Chargement de l'équipe" />}
       <ul className="flex flex-col gap-2">
         {(equipe ?? []).map((p) => (
           <li key={p.id} className={`flex flex-col gap-2 rounded-[14px] bg-bg p-3 ${p.actif ? "" : "opacity-70"}`}>
@@ -147,25 +160,26 @@ export default function Equipe({ onMonCompte }) {
               {p.moi && (
                 <button type="button" onClick={onMonCompte} className={`${boutonPetit} bg-white`}>Gérer mon compte</button>
               )}
-              {p.niveauModifiable && (
+              {p.niveauModifiable && (occupe === p.id && !aConfirmer ? (
+                <span className={`${boutonPetit} inline-flex min-w-32 items-center justify-center bg-white text-pri`}><Points label="Changement de niveau en cours" /></span>
+              ) : (
                 <label className="flex items-center gap-2 text-[14px] font-bold">
                   <span className="sr-only">Niveau de {p.nom}</span>
-                  <select value={p.niveau} disabled={occupe === p.id} onChange={(e) => changerNiveau(p, Number(e.target.value))} className="min-h-11 rounded-full bg-white px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3]">
+                  <select value={p.niveau} disabled={occupe === p.id} onChange={(e) => changerNiveau(p, Number(e.target.value))} className="min-h-11 min-w-32 rounded-full bg-white px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3]">
                     <option value={0}>Chauffeur</option>
                     <option value={1}>Manager</option>
                   </select>
                 </label>
-              )}
-              {p.gerable && ["nouveau-mot-de-passe", "supprimer"].map((action) => {
-                const attente = aConfirmer?.id === p.id && aConfirmer?.action === action;
-                return (
-                  <button key={action} type="button" disabled={occupe === p.id} onClick={() => agir(p, action)} className={`${boutonPetit} ${attente ? "bg-[#b3261e] text-white shadow-none" : "bg-white"}`}>
-                    {attente ? texteConfirmation[action] : libelleAction[action]}
+              ))}
+              {p.gerable && (
+                <>
+                  <button type="button" disabled={occupe === p.id} onClick={() => setAConfirmer({ personne: p, action: "nouveau-mot-de-passe" })} className={`${boutonPetit} bg-white`}>
+                    Nouveau mot de passe
                   </button>
-                );
-              })}
-              {aConfirmer?.id === p.id && (
-                <button type="button" onClick={() => setAConfirmer(null)} className={`${boutonPetit} bg-white`}>Annuler</button>
+                  <button type="button" disabled={occupe === p.id} onClick={() => setAConfirmer({ personne: p, action: "supprimer" })} className={`${boutonPetit} bg-white text-[#b3261e]`}>
+                    Supprimer
+                  </button>
+                </>
               )}
             </div>
           </li>
@@ -173,6 +187,14 @@ export default function Equipe({ onMonCompte }) {
       </ul>
 
       {erreur && <p role="alert" className="text-[15px] font-bold text-[#b3261e]">{erreur}</p>}
+
+      <Confirmation
+        ouvert={Boolean(aConfirmer)}
+        {...fenetre}
+        enCours={Boolean(aConfirmer) && occupe === cible?.id}
+        onConfirmer={agir}
+        onAnnuler={() => setAConfirmer(null)}
+      />
 
       {ouvert ? (
         <form onSubmit={ajouter} className="flex flex-col gap-3" noValidate>

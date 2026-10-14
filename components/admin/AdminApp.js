@@ -13,6 +13,7 @@ import Connexion from "./Connexion";
 import Disponibilite from "./Disponibilite";
 import Planning from "./Planning";
 import Caisse from "./Caisse";
+import { SqueletteCourses } from "./Squelette";
 import { IconeAppli, IconeCalendrier, IconeCloche, IconeEuro } from "./icones";
 
 const TITRES = { traiter: "À traiter", planning: "Planning", caisse: "Caisse", appli: "Appli" };
@@ -333,7 +334,7 @@ function Espace() {
             Impossible de mettre la liste à jour. Vérifiez votre connexion.
           </p>
         )}
-        {courses === null && !problemeReseau && <p className="py-10 text-center text-[#5a6366]">Chargement des courses…</p>}
+        {courses === null && !problemeReseau && <SqueletteCourses />}
 
         {onglet === "traiter" && courses && (
           <>

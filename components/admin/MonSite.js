@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import Depliable from "./Depliable";
 import { IconeEuro } from "./icones";
+import { Bloc } from "./Squelette";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-bg px-4 py-3 text-lg tabular-nums shadow-[inset_0_0_0_1.5px_#e2e6e3] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -72,7 +73,11 @@ export default function MonSite() {
           Ces tarifs sont encore ceux de démonstration. Enregistrez les vôtres : le site arrêtera d&apos;afficher « tarifs fictifs ».
         </p>
       )}
-      {valeurs === null && !message && <p className="text-[#5a6366]">Chargement…</p>}
+      {valeurs === null && !message && (
+        <div role="status" aria-label="Chargement des tarifs" className="flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => <div key={i} className="flex flex-col gap-1.5"><Bloc className="h-4 w-32" /><Bloc className="h-14 w-full rounded-[14px]" /></div>)}
+        </div>
+      )}
       {valeurs && (
         <form onSubmit={enregistrer} className="flex flex-col gap-3" noValidate>
           {CHAMPS.map(({ cle, libelle, aide }) => (
