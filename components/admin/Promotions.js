@@ -91,7 +91,7 @@ export default function Promotions() {
         Une remise en % sur le prix estimé. Sans code, elle s&apos;applique toute seule aux courses concernées ; avec un code, le client le saisit sur le site. Si plusieurs remises conviennent, la plus forte s&apos;applique.
       </p>
 
-      {liste === null && !erreur && <SqueletteListe lignes={2} label="Chargement des promotions" />}
+      {liste === null && !erreur && <SqueletteListe lignes={2} label="Chargement des promotions" boutons={["w-28", "w-24", "w-28"]} />}
       {liste?.length === 0 && !form && <p className="rounded-[14px] bg-bg p-3.5 text-[15px] text-[#5a6366]">Aucune promotion pour le moment.</p>}
 
       <ul className="flex flex-col gap-2">
