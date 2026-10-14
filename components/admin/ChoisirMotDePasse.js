@@ -12,6 +12,7 @@ const LONGUEUR_MIN = 10;
 // Choix d'un nouveau mot de passe. `obligatoire` : premier accès avec le mot de passe provisoire donné par le patron
 // (plein écran, on ne peut pas passer). Sinon : formulaire de l'onglet « Appli ».
 export default function ChoisirMotDePasse({ obligatoire = false, email = "", onFait }) {
+  const [ancien, setAncien] = useState("");
   const [mdp, setMdp] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [voir, setVoir] = useState(false);
@@ -21,12 +22,22 @@ export default function ChoisirMotDePasse({ obligatoire = false, email = "", onF
 
   async function valider(e) {
     e.preventDefault();
+    if (!obligatoire && !ancien) return setErreur("Indiquez votre mot de passe actuel.");
     if (mdp.length < LONGUEUR_MIN) return setErreur(`Choisissez au moins ${LONGUEUR_MIN} caractères.`);
     if (email && mdp.toLowerCase() === email.toLowerCase()) return setErreur("Le mot de passe ne doit pas être votre adresse e-mail.");
     if (mdp !== confirmation) return setErreur("Les deux mots de passe ne sont pas identiques.");
     setEnCours(true);
     setErreur("");
-    const { error } = await supabaseNavigateur().auth.updateUser({ password: mdp, data: { doit_changer_mdp: false } });
+    const sb = supabaseNavigateur();
+    if (!obligatoire) {
+      // Preuve que c'est bien vous : on reconnecte le compte avec l'ancien mot de passe avant d'accepter le nouveau
+      const { error: refus } = await sb.auth.signInWithPassword({ email, password: ancien });
+      if (refus) {
+        setEnCours(false);
+        return setErreur("Le mot de passe actuel n'est pas le bon.");
+      }
+    }
+    const { error } = await sb.auth.updateUser({ password: mdp, data: { doit_changer_mdp: false } });
     setEnCours(false);
     if (error) {
       setErreur(
@@ -36,6 +47,7 @@ export default function ChoisirMotDePasse({ obligatoire = false, email = "", onF
       );
       return;
     }
+    setAncien("");
     setMdp("");
     setConfirmation("");
     setFait(true);
@@ -44,6 +56,12 @@ export default function ChoisirMotDePasse({ obligatoire = false, email = "", onF
 
   const formulaire = (
     <form onSubmit={valider} className="flex flex-col gap-4" noValidate>
+      {!obligatoire && (
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="ancien-mdp" className="text-base font-bold">Mot de passe actuel</label>
+          <input id="ancien-mdp" type={voir ? "text" : "password"} autoComplete="current-password" value={ancien} onChange={(e) => setAncien(e.target.value)} className={champ} />
+        </div>
+      )}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="nouveau-mdp" className="text-base font-bold">Nouveau mot de passe</label>
         <div className="relative">

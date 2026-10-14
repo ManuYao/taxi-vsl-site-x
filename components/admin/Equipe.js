@@ -23,9 +23,14 @@ async function appel(methode, corps) {
   }
 }
 
-// Réservé au patron : qui a accès à l'espace chauffeur. Ajouter une personne, lui redonner un mot de passe, couper son accès.
-export default function Equipe() {
+const NOMS_NIVEAUX = ["Chauffeur", "Manager", "Patron"];
+
+// Réservé aux managers et au patron : qui a accès à l'espace chauffeur. On ne gère que les niveaux en dessous du sien.
+export default function Equipe({ onMonCompte }) {
   const [equipe, setEquipe] = useState(null);
+  const [niveauxPossibles, setNiveauxPossibles] = useState([0]);
+  const [niveau, setNiveau] = useState(0); // niveau donné à la personne qu'on ajoute
+  const [bientot, setBientot] = useState(false);
   const [erreur, setErreur] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
@@ -40,6 +45,7 @@ export default function Equipe() {
     const r = await appel("GET");
     if (r.ok) {
       setEquipe(r.equipe);
+      setNiveauxPossibles(r.niveauxAttribuables ?? [0]);
       setErreur("");
     } else setErreur(r.erreur ?? "Impossible de lire l'équipe.");
   }, []);
@@ -53,14 +59,24 @@ export default function Equipe() {
     e.preventDefault();
     setEnCours(true);
     setErreur("");
-    const r = await appel("POST", { nom, email });
+    const r = await appel("POST", { nom, email, niveau });
     setEnCours(false);
     if (!r.ok) return setErreur(r.erreur ?? "Impossible de créer l'accès.");
     setSecret({ nom, email: email.trim().toLowerCase(), motDePasse: r.motDePasse, lien: `${window.location.origin}/admin` });
     setCopie(false);
     setNom("");
     setEmail("");
+    setNiveau(0);
     setOuvert(false);
+    charger();
+  }
+
+  async function changerNiveau(personne, nouveau) {
+    setOccupe(personne.id);
+    setErreur("");
+    const r = await appel("PATCH", { id: personne.id, action: "changer-niveau", niveau: nouveau });
+    setOccupe(null);
+    if (!r.ok) setErreur(r.erreur ?? "Action impossible.");
     charger();
   }
 
@@ -91,12 +107,13 @@ export default function Equipe() {
     }
   }
 
-  const libelleAction = { desactiver: "Désactiver", reactiver: "Réactiver", "nouveau-mot-de-passe": "Nouveau mot de passe" };
+  const libelleAction = { supprimer: "Supprimer", "nouveau-mot-de-passe": "Nouveau mot de passe" };
+  const texteConfirmation = { supprimer: "Supprimer pour de bon ?", "nouveau-mot-de-passe": "Confirmer ?" };
   const boutonPetit = "min-h-11 rounded-full px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3] disabled:opacity-60";
 
   return (
     <Depliable titre="Équipe" Icone={IconeEquipe}>
-      <p className="text-[15px] text-[#5a6366]">Les personnes qui ont accès aux courses. Vous leur donnez un mot de passe provisoire, qu&apos;elles changent à leur première connexion.</p>
+      <p className="text-[15px] text-[#5a6366]">Les personnes qui ont accès aux courses. Vous gérez les niveaux en dessous du vôtre. Le mot de passe provisoire est changé à la première connexion.</p>
 
       {secret && (
         <div role="status" className="flex flex-col gap-2 rounded-[14px] bg-soft p-3.5">
@@ -123,15 +140,27 @@ export default function Equipe() {
                 <b>{p.nom || "Sans nom"}</b> {p.moi && <span className="text-[#5a6366]">(vous)</span>}
               </p>
               <p className="text-[14px] [overflow-wrap:anywhere] text-[#5a6366]">
-                {p.email} · {p.role === "patron" ? "patron" : "chauffeur"} · {p.actif ? "actif" : "désactivé"}
+                {p.email} · {NOMS_NIVEAUX[p.niveau]?.toLowerCase()}{p.actif ? "" : " · désactivé"}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {[p.actif ? (p.moi ? null : "desactiver") : "reactiver", "nouveau-mot-de-passe"].filter(Boolean).map((action) => {
+              {p.moi && (
+                <button type="button" onClick={onMonCompte} className={`${boutonPetit} bg-white`}>Gérer mon compte</button>
+              )}
+              {p.niveauModifiable && (
+                <label className="flex items-center gap-2 text-[14px] font-bold">
+                  <span className="sr-only">Niveau de {p.nom}</span>
+                  <select value={p.niveau} disabled={occupe === p.id} onChange={(e) => changerNiveau(p, Number(e.target.value))} className="min-h-11 rounded-full bg-white px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3]">
+                    <option value={0}>Chauffeur</option>
+                    <option value={1}>Manager</option>
+                  </select>
+                </label>
+              )}
+              {p.gerable && ["nouveau-mot-de-passe", "supprimer"].map((action) => {
                 const attente = aConfirmer?.id === p.id && aConfirmer?.action === action;
                 return (
                   <button key={action} type="button" disabled={occupe === p.id} onClick={() => agir(p, action)} className={`${boutonPetit} ${attente ? "bg-[#b3261e] text-white shadow-none" : "bg-white"}`}>
-                    {attente ? "Confirmer ?" : libelleAction[action]}
+                    {attente ? texteConfirmation[action] : libelleAction[action]}
                   </button>
                 );
               })}
@@ -155,14 +184,27 @@ export default function Equipe() {
             <label htmlFor="equipe-email" className="text-base font-bold">Adresse e-mail</label>
             <input id="equipe-email" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} className={champ} autoComplete="off" placeholder="yaoble@exemple.fr" />
           </div>
+          {niveauxPossibles.length > 1 && (
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="equipe-niveau" className="text-base font-bold">Niveau</label>
+              <select id="equipe-niveau" value={niveau} onChange={(e) => setNiveau(Number(e.target.value))} className={champ}>
+                {niveauxPossibles.map((n) => <option key={n} value={n}>{NOMS_NIVEAUX[n]}</option>)}
+              </select>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-2">
             <button type="submit" disabled={enCours} className="min-h-[52px] rounded-xl bg-pri font-bold text-white disabled:opacity-60">{enCours ? "Création…" : "Créer l'accès"}</button>
             <button type="button" onClick={() => { setOuvert(false); setErreur(""); }} className="min-h-[52px] rounded-xl bg-bg font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3]">Annuler</button>
           </div>
         </form>
       ) : (
-        <button type="button" onClick={() => setOuvert(true)} className="min-h-[52px] rounded-xl bg-soft font-bold text-pri">+ Ajouter un chauffeur</button>
+        <button type="button" onClick={() => setOuvert(true)} className="min-h-[52px] rounded-xl bg-soft font-bold text-pri">+ Ajouter une personne</button>
       )}
+
+      <button type="button" aria-disabled="true" onClick={() => setBientot(true)} className="min-h-[52px] rounded-xl bg-bg font-bold text-[#8a9296] shadow-[inset_0_0_0_1.5px_#e2e6e3]">
+        Droits détaillés par personne · bientôt
+      </button>
+      {bientot && <p role="status" className="text-[15px] text-[#5a6366]">Pas encore disponible. Parlez-en à votre développeur pour l&apos;ajouter.</p>}
     </Depliable>
   );
 }

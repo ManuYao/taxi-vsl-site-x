@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import { etatEffectif } from "@/lib/disponibilite";
+import { roleDuNiveau } from "@/lib/niveaux";
 import { heureParis, libelleJour } from "@/lib/paris";
 import useDansLeNavigateur from "../useDansLeNavigateur";
 import Appli from "./Appli";
@@ -70,11 +71,11 @@ function Espace() {
     let annule = false;
     supabaseNavigateur()
       .from("staff")
-      .select("role, display_name, active")
+      .select("niveau, display_name, active")
       .eq("user_id", userId)
       .maybeSingle()
       .then(({ data, error }) => {
-        if (!annule) setFiche({ userId, data: error ? null : data });
+        if (!annule) setFiche({ userId, data: error || !data ? null : { ...data, role: roleDuNiveau(data.niveau) } });
       });
     return () => {
       annule = true;
@@ -356,7 +357,7 @@ function Espace() {
         {onglet === "caisse" && estPatron && <Caisse version={versionCaisse} maintenant={maintenant} onChange={charger} />}
 
         {onglet === "appli" && (
-          <Appli email={session.user.email} role={ficheDeCeCompte.role} nom={ficheDeCeCompte.display_name}>
+          <Appli email={session.user.email} role={ficheDeCeCompte.role} niveau={ficheDeCeCompte.niveau} nom={ficheDeCeCompte.display_name}>
             <Disponibilite key={dispo?.updated_at ?? "aucune"} dispo={dispo} onEnregistrer={changerDispo} />
           </Appli>
         )}

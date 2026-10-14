@@ -17,13 +17,14 @@ const etapes = "flex flex-col gap-1 rounded-[14px] bg-bg p-3.5 text-[15px] leadi
 //   Activité : Disponibilité, Mes tarifs (ouverts), Promotions   ·   Équipe (patron)   ·   Compte : compte, mot de passe, notifications, installation
 // Les groupes restent montés (seulement cachés) : ce qu'on a tapé dans un formulaire n'est pas perdu quand on change de groupe.
 // Les notifications descendent en bas du groupe Compte une fois activées : il n'y a plus rien à y faire.
-export default function Appli({ email, role, nom, children }) {
+export default function Appli({ email, role, niveau, nom, children }) {
   const push = usePush({ getToken: jeton });
   const notifications = <BlocNotifications push={push} />;
   const patron = role === "patron";
+  const gestion = niveau >= 1; // managers et patron : onglet Équipe
   const groupes = [
     { id: "activite", titre: "Activité", Icone: IconeReglages },
-    ...(patron ? [{ id: "equipe", titre: "Équipe", Icone: IconeEquipe }] : []),
+    ...(gestion ? [{ id: "equipe", titre: "Équipe", Icone: IconeEquipe }] : []),
     { id: "compte", titre: "Compte", Icone: IconeUtilisateur, alerte: push.etat === "inactif" },
   ];
   const [groupe, setGroupe] = useState("activite");
@@ -77,9 +78,9 @@ export default function Appli({ email, role, nom, children }) {
         {patron && <Promotions />}
       </div>
 
-      {patron && (
+      {gestion && (
         <div role="tabpanel" id="groupe-equipe" aria-labelledby="onglet-equipe" hidden={groupe !== "equipe"} className={panneau}>
-          <Equipe />
+          <Equipe onMonCompte={() => setGroupe("compte")} />
         </div>
       )}
 
@@ -88,7 +89,7 @@ export default function Appli({ email, role, nom, children }) {
 
         <Depliable titre="Mon compte" Icone={IconeUtilisateur} ouvertParDefaut>
           <p className="text-[#5a6366]">
-            {nom ? <b className="text-ink">{nom}</b> : null} {patron ? "· patron" : "· chauffeur"}
+            {nom ? <b className="text-ink">{nom}</b> : null} · {["chauffeur", "manager", "patron"][niveau] ?? "chauffeur"}
           </p>
           <p className="[overflow-wrap:anywhere] text-[#5a6366]">{email}</p>
           <button
