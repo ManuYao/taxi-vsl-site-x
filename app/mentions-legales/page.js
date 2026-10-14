@@ -29,6 +29,12 @@ export default function MentionsLegales() {
         <p>Ce site est hébergé par {l.hebergeur}.</p>
       </Bloc>
 
+      {l.conceptionEmail && (
+        <Bloc titre="Conception du site">
+          <p>Contact pour tout problème technique sur le site : <a href={`mailto:${l.conceptionEmail}`}>{l.conceptionEmail}</a></p>
+        </Bloc>
+      )}
+
       <Bloc titre="Prix et réservations">
         <p>
           Les prix affichés sur le site sont des <b>estimations</b> calculées d&apos;après la distance et l&apos;heure de la course.

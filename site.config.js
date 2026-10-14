@@ -32,6 +32,7 @@ const site = {
     email: "",
     numeroLicence: "", // licence de taxi / autorisation de stationnement, ou agrément VSL
     hebergeur: "Netlify, Inc. (États-Unis), https://www.netlify.com",
+    conceptionEmail: "yaomanuit@gmail.com", // contact du créateur du site (affiché dans les mentions légales) ; "" pour ne rien afficher
     conservationAns: 3, // durée de conservation des demandes de course (à confirmer)
   },
 
