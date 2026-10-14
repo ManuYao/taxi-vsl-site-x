@@ -6,7 +6,6 @@ import { etatEffectif } from "@/lib/disponibilite";
 import { heureParis, libelleJour } from "@/lib/paris";
 import useDansLeNavigateur from "../useDansLeNavigateur";
 import Appli from "./Appli";
-import BlocNotifications from "./BlocNotifications";
 import ChoisirMotDePasse from "./ChoisirMotDePasse";
 import CarteCourse from "./CarteCourse";
 import Connexion from "./Connexion";
@@ -359,7 +358,6 @@ function Espace() {
         {onglet === "appli" && (
           <Appli email={session.user.email} role={ficheDeCeCompte.role} nom={ficheDeCeCompte.display_name}>
             <Disponibilite key={dispo?.updated_at ?? "aucune"} dispo={dispo} onEnregistrer={changerDispo} />
-            <BlocNotifications />
           </Appli>
         )}
       </main>

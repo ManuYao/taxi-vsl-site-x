@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
-import { usePush } from "./usePush";
 import Depliable from "./Depliable";
+import { IconeCloche } from "./icones";
 
-const jeton = async () => (await supabaseNavigateur().auth.getSession()).data.session?.access_token ?? null;
+export const jeton = async () => (await supabaseNavigateur().auth.getSession()).data.session?.access_token ?? null;
 const bouton = "min-h-[52px] w-full rounded-xl px-4 font-bold disabled:opacity-60";
 
 // Notifications push : l'état de cet appareil et les boutons pour l'activer, le tester, le désactiver.
-export default function BlocNotifications() {
-  const { etat, activer, desactiver, erreur, occupe } = usePush({ getToken: jeton });
+// `push` : le résultat de usePush(), appelé dans Appli (qui place ce bloc selon l'état).
+export default function BlocNotifications({ push }) {
+  const { etat, activer, desactiver, erreur, occupe } = push;
   const [essai, setEssai] = useState(null); // { ton, texte }
   const [essaiEnCours, setEssaiEnCours] = useState(false);
 
@@ -33,7 +34,7 @@ export default function BlocNotifications() {
   }
 
   return (
-    <Depliable titre="Notifications">
+    <Depliable titre="Notifications" sousTitre={etat === "actif" ? "✓ Activées sur cet appareil" : undefined} Icone={IconeCloche}>
 
       {etat === "inconnu" && <p className="text-[#5a6366]">Vérification…</p>}
 

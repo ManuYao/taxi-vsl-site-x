@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import Depliable from "./Depliable";
+import { IconeEuro } from "./icones";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-bg px-4 py-3 text-lg tabular-nums shadow-[inset_0_0_0_1.5px_#e2e6e3] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -62,7 +63,7 @@ export default function MonSite() {
   }
 
   return (
-    <Depliable titre="Mes tarifs" ouvertParDefaut>
+    <Depliable titre="Mes tarifs" Icone={IconeEuro} ouvertParDefaut>
       <p className="text-[15px] text-[#5a6366]">
         Ils servent à calculer le prix estimé que voient les clients avant de réserver. Le prix final reste celui du taximètre.
       </p>

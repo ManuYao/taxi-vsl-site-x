@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
+import Depliable from "./Depliable";
+import { IconeCadenas } from "./icones";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-white px-4 py-3 text-lg shadow-[inset_0_0_0_1.5px_#c9d1cc] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -66,10 +68,9 @@ export default function ChoisirMotDePasse({ obligatoire = false, email = "", onF
 
   if (!obligatoire) {
     return (
-      <details className="rounded-[18px] bg-white p-4">
-        <summary className="min-h-11 cursor-pointer py-2 font-title text-lg font-bold">Changer mon mot de passe</summary>
-        <div className="mt-2">{formulaire}</div>
-      </details>
+      <Depliable titre="Changer mon mot de passe" Icone={IconeCadenas}>
+        {formulaire}
+      </Depliable>
     );
   }
   return (

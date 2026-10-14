@@ -47,3 +47,32 @@ export const IconeVoiture = ({ className = "size-6" }) => (
     <path d="M5 17h14M6 17l1.5-6h9L18 17M7 17v2M17 17v2M10 11l1-3h2l1 3" />
   </svg>
 );
+
+export const IconeUtilisateur = ({ className = "size-6" }) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21a8 8 0 0 1 16 0" />
+  </svg>
+);
+
+export const IconeEquipe = ({ className = "size-6" }) => (
+  <svg {...base} className={className}>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8" />
+  </svg>
+);
+
+export const IconePromo = ({ className = "size-6" }) => (
+  <svg {...base} className={className}>
+    <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+    <circle cx="7.5" cy="7.5" r="1.2" />
+  </svg>
+);
+
+export const IconeCadenas = ({ className = "size-6" }) => (
+  <svg {...base} className={className}>
+    <rect x="4" y="11" width="16" height="10" rx="2" />
+    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+  </svg>
+);

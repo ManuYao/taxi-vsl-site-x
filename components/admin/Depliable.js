@@ -1,10 +1,16 @@
 // Section repliable de l'espace chauffeur (<details> natif : clavier et lecteurs d'écran gérés).
+// `Icone` : petite icône dans une pastille à gauche du titre (repère visuel, sans texte à lire).
 // `ouvertParDefaut` : ouverte à l'arrivée sur la page ; le contenu reste monté quand c'est replié (rien n'est perdu).
-export default function Depliable({ titre, sousTitre, ouvertParDefaut = false, children }) {
+export default function Depliable({ titre, sousTitre, Icone, ouvertParDefaut = false, children }) {
   return (
     <details open={ouvertParDefaut} className="group rounded-[18px] bg-white p-4">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
-        <span className="min-w-0">
+        {Icone && (
+          <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-xl bg-soft text-pri">
+            <Icone className="size-[22px]" />
+          </span>
+        )}
+        <span className="min-w-0 flex-1">
           <h2 className="font-title text-lg font-bold">{titre}</h2>
           {sousTitre && <span className="block text-[14px] text-[#5a6366]">{sousTitre}</span>}
         </span>

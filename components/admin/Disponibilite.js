@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { etatEffectif } from "@/lib/disponibilite";
 import Depliable from "./Depliable";
+import { IconeCalendrier } from "./icones";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-bg px-4 py-3 text-lg shadow-[inset_0_0_0_1.5px_#e2e6e3] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -38,7 +39,7 @@ export default function Disponibilite({ dispo, onEnregistrer }) {
         : `En vacances${effectif.jusquau ? ` jusqu'au ${effectif.jusquau.split("-").reverse().join("/")} inclus` : ""}.`;
 
   return (
-    <Depliable titre="Disponibilité" sousTitre={`${effectif.ouvert ? "🟢" : "🔴"} ${resume}`} ouvertParDefaut>
+    <Depliable titre="Disponibilité" sousTitre={`${effectif.ouvert ? "🟢" : "🔴"} ${resume}`} Icone={IconeCalendrier} ouvertParDefaut>
 
       <form onSubmit={enregistrer} className="flex flex-col gap-3">
         <div role="radiogroup" aria-label="État du service" className="grid gap-2">
