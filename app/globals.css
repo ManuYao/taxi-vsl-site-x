@@ -25,6 +25,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Les éléments qui arrivent de côté (data-rv) ne doivent jamais élargir la page : pas de défilement latéral */
+  overflow-x: clip;
 }
 
 /* Fond en petits points verts très discrets (le texte reste sur des cartes ou un fond clair : contraste AA gardé). */
@@ -32,6 +34,7 @@ body {
   background-color: var(--bg);
   background-image: radial-gradient(color-mix(in srgb, var(--pri) 16%, transparent) 1.6px, transparent 1.7px);
   background-size: 24px 24px;
+  overflow-x: clip;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 18px;
@@ -99,6 +102,10 @@ h1, h2, h3 {
 .rv-pret[data-rv="gauche"] { translate: -70px 0; }
 .rv-pret[data-rv="droite"] { translate: 70px 0; }
 .rv-pret[data-rv="zoom"] { scale: 0.93; }
+@media (max-width: 640px) {
+  .rv-pret[data-rv="gauche"] { translate: -36px 0; }
+  .rv-pret[data-rv="droite"] { translate: 36px 0; }
+}
 .rv-vu {
   transition: opacity 0.9s ease, translate 1s cubic-bezier(0.2, 0.7, 0.2, 1), scale 1s cubic-bezier(0.2, 0.7, 0.2, 1);
   transition-delay: var(--rv-delay, 0s);
