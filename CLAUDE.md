@@ -94,7 +94,14 @@ site.config.js            nom, téléphone, WhatsApp, couleurs, villes, tarifs p
 
 ## Périmètre
 - **V1** : site une page, réservation avec arrêt intermédiaire et prix estimé, notifications chauffeur (push + secours), accepter/refuser, e-mail de confirmation, pages SEO par ville, mentions légales.
-- **V2** : SMS client, réductions et codes promo depuis l'admin, paiement ou acompte en ligne, plusieurs chauffeurs ou véhicules, bouton disponible/indisponible, version anglaise, statistiques.
+- **V2** : SMS client, réductions et codes promo depuis l'admin, paiement ou acompte en ligne, plusieurs chauffeurs ou véhicules, bouton disponible/indisponible, version anglaise (voir ci-dessous), statistiques.
+
+## Version anglaise (V2, à décider avec le client)
+- **Intérêt SEO limité mais réel** : les recherches locales (« taxi Montargis ») sont en français, donc l'anglais n'aide pas pour la clientèle principale. Il sert surtout aux voyageurs qui arrivent par Orly, Roissy-CDG ou les gares, et aux étrangers de passage. À proposer au client seulement s'il a cette clientèle.
+- **Comment la faire proprement** : des pages sous `/en` (jamais une traduction automatique du navigateur), avec des balises `hreflang` entre pages françaises et anglaises, un titre et une description traduits, et le sélecteur de langue visible dans l'en-tête.
+- **Traduction** : textes dans `site.config.js` (un objet par langue), jamais en dur dans les composants. Relecture humaine obligatoire pour les termes de métier (« transport conventionné » n'a pas d'équivalent exact : le garder expliqué en une phrase).
+- **Ordre de priorité** : d'abord les pages utiles aux voyageurs (accueil, gares et aéroports, réservation, FAQ), pas les 26 pages communes.
+- Le formulaire de réservation et l'espace chauffeur restent en français en V1.
 
 ## État d'avancement (mis à jour le 14/10/2026)
 - **Fait et testé** : site public une page ; formulaire de réservation (adresses IGN, date/heure maison, prix estimé serveur via OpenRouteService, promotions et code promo, anti-spam Turnstile + champ piège) ; base Supabase (`supabase/schema.sql` puis `supabase/migrations/002-bloc-f.sql`, à lancer dans l'éditeur SQL) ; alertes Telegram + e-mail + notifications push ; espace chauffeur `/admin` (PWA, connexion e-mail + mot de passe, courses à traiter, accepter / refuser / annuler, planning, ajout d'une course à la main, encaissement, caisse + export CSV, équipe, disponibilité, tarifs et promotions modifiables par le patron).
