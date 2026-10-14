@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
+import Depliable from "./Depliable";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-bg px-4 py-3 text-lg shadow-[inset_0_0_0_1.5px_#e2e6e3] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -93,8 +94,7 @@ export default function Equipe() {
   const boutonPetit = "min-h-11 rounded-full px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3] disabled:opacity-60";
 
   return (
-    <section className="flex flex-col gap-3 rounded-[18px] bg-white p-4">
-      <h2 className="font-title text-lg font-bold">Équipe</h2>
+    <Depliable titre="Équipe" ouvertParDefaut>
       <p className="text-[15px] text-[#5a6366]">Les personnes qui ont accès aux courses. Vous leur donnez un mot de passe provisoire, qu&apos;elles changent à leur première connexion.</p>
 
       {secret && (
@@ -162,6 +162,6 @@ export default function Equipe() {
       ) : (
         <button type="button" onClick={() => setOuvert(true)} className="min-h-[52px] rounded-xl bg-soft font-bold text-pri">+ Ajouter un chauffeur</button>
       )}
-    </section>
+    </Depliable>
   );
 }

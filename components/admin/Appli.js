@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import ChoisirMotDePasse from "./ChoisirMotDePasse";
+import Depliable from "./Depliable";
 import Equipe from "./Equipe";
 import MonSite from "./MonSite";
 import Promotions from "./Promotions";
@@ -13,8 +14,7 @@ const etapes = "flex flex-col gap-1 rounded-[14px] bg-bg p-3.5 text-[15px] leadi
 export default function Appli({ email, role, nom, children }) {
   return (
     <div className="flex flex-col gap-4">
-      <section className="flex flex-col gap-1 rounded-[18px] bg-white p-4">
-        <h2 className="font-title text-lg font-bold">Mon compte</h2>
+      <Depliable titre="Mon compte">
         <p className="text-[#5a6366]">
           {nom ? <b className="text-ink">{nom}</b> : null} {role === "patron" ? "· patron" : "· chauffeur"}
         </p>
@@ -26,7 +26,7 @@ export default function Appli({ email, role, nom, children }) {
         >
           Se déconnecter
         </button>
-      </section>
+      </Depliable>
 
       <ChoisirMotDePasse email={email} />
 
@@ -63,21 +63,9 @@ function TutoInstallation() {
     </div>
   );
   return (
-    <details className="group rounded-[18px] bg-white p-4">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
-        <span>
-          <span className="block font-title text-lg font-bold">Installer l&apos;appli sur le téléphone</span>
-          <span className="block text-[14px] text-[#5a6366]">À faire une seule fois</span>
-        </span>
-        <span aria-hidden="true" className="flex size-[34px] flex-none items-center justify-center rounded-full bg-soft text-[22px] text-pri">
-          <span className="group-open:hidden">+</span>
-          <span className="hidden group-open:inline">–</span>
-        </span>
-      </summary>
-      <div className="mt-3 flex flex-col gap-3">
-        <p className="text-[15px] text-[#5a6366]">L&apos;icône apparaît sur l&apos;écran d&apos;accueil, comme une appli.</p>
-        {iphone ? [ios, android] : [android, ios]}
-      </div>
-    </details>
+    <Depliable titre="Installer l'appli sur le téléphone" sousTitre="À faire une seule fois">
+      <p className="text-[15px] text-[#5a6366]">L&apos;icône apparaît sur l&apos;écran d&apos;accueil, comme une appli.</p>
+      {iphone ? [ios, android] : [android, ios]}
+    </Depliable>
   );
 }

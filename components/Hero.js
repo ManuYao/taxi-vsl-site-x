@@ -54,13 +54,13 @@ export default function Hero() {
         <div className="relative aspect-[1.2/1] min-w-0 max-w-full" aria-hidden="true">
           <div className="absolute inset-[4%_2%_8%_12%] rounded-full bg-soft" />
           <div className="absolute right-[-30%] bottom-[12%] h-[40%] w-[88%] -skew-x-12 rounded-l-[48px] bg-pri" />
-          <Voiture className="absolute bottom-[8%] left-[-4%] h-auto w-[108%] max-w-none" />
-          <div className="tbd absolute top-[6%] left-[4%] flex flex-col gap-0.5 rounded-2xl bg-white px-4 py-3 text-sm text-[#5a6366] shadow-[0_18px_40px_-20px_rgba(15,25,20,.45)]">
+          <Voiture className="anim-entree absolute bottom-[8%] left-[-4%] h-auto w-[108%] max-w-none" />
+          <div className="anim-flotte tbd absolute top-[6%] left-[4%] flex flex-col gap-0.5 rounded-2xl bg-white px-4 py-3 text-sm text-[#5a6366] shadow-[0_18px_40px_-20px_rgba(15,25,20,.45)]">
             <span>{site.exemplePrix.trajet}</span>
             <b className="font-title text-[26px] leading-tight tabular-nums text-ink">{site.exemplePrix.montant}</b>
             <span>prix estimé avant de réserver</span>
           </div>
-          <div className="absolute right-[4%] bottom-[2%] flex items-center gap-2.5 rounded-2xl bg-white px-4 py-3 text-[15px] font-bold text-ink shadow-[0_18px_40px_-20px_rgba(15,25,20,.45)]">
+          <div className="anim-flotte absolute right-[4%] bottom-[2%] [animation-delay:-2.5s] flex items-center gap-2.5 rounded-2xl bg-white px-4 py-3 text-[15px] font-bold text-ink shadow-[0_18px_40px_-20px_rgba(15,25,20,.45)]">
             <i className="inline-flex size-[30px] items-center justify-center rounded-full bg-soft">
               <PlusIcon className="size-[18px] text-pri" />
             </i>

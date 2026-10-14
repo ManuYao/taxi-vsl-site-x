@@ -91,6 +91,50 @@ h1, h2, h3 {
   70%, 100% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--pri) 0%, transparent); }
 }
 
+/* Apparition au défilement : CSS seul, sans JavaScript. Si le navigateur ne sait pas le faire, tout reste visible. */
+@keyframes apparait {
+  from { opacity: 0; translate: 0 28px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: apparait linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 45%;
+  }
+}
+
+/* Carte qui se soulève au survol */
+@layer components {
+  .carte-fx {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.18s ease;
+  }
+  .carte-fx:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 36px -26px rgba(15, 25, 20, 0.55);
+  }
+}
+
+/* Héros : la voiture arrive en glissant, les bulles flottent doucement */
+@keyframes entree {
+  from { opacity: 0; transform: translateX(-70px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes flotte {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.anim-entree {
+  animation: entree 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.anim-flotte {
+  animation: flotte 5s ease-in-out infinite;
+}
+
 /* Contenu provisoire, à remplacer par les infos du client */
 .tbd {
   outline: 2px dashed #b7791f;
@@ -109,5 +153,9 @@ html:not([data-tbd="on"]) .tbd {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  /* Les animations en boucle ou liées au défilement sont coupées net (sinon elles clignoteraient) */
+  .reveal, .anim-entree, .anim-flotte, .fx-halo, .fx-sonne {
+    animation: none !important;
   }
 }

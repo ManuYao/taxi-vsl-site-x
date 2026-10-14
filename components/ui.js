@@ -5,7 +5,7 @@ export function Container({ children, className = "" }) {
 
 export function SectionHead({ eyebrow, title, children, center = false, dark = false }) {
   return (
-    <div className={`mb-10 flex max-w-[640px] flex-col gap-2.5 ${center ? "mx-auto items-center text-center" : ""}`}>
+    <div className={`reveal mb-10 flex max-w-[640px] flex-col gap-2.5 ${center ? "mx-auto items-center text-center" : ""}`}>
       <span className={`text-sm font-bold uppercase tracking-[.1em] ${dark ? "text-soft2" : "text-pri"}`}>{eyebrow}</span>
       <h2 className={`text-[clamp(30px,4.4vw,46px)] font-extrabold leading-[1.06] tracking-tight text-balance ${dark ? "text-white" : ""}`}>
         {title}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import { PORTEES } from "@/lib/promotions";
+import Depliable from "./Depliable";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-bg px-4 py-3 text-lg focus:outline-none shadow-[inset_0_0_0_1.5px_#e2e6e3] focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -83,8 +84,7 @@ export default function Promotions() {
   const petit = "min-h-11 rounded-full bg-white px-4 text-[14px] font-bold shadow-[inset_0_0_0_1.5px_#e2e6e3]";
 
   return (
-    <section className="flex flex-col gap-3 rounded-[18px] bg-white p-4">
-      <h2 className="font-title text-lg font-bold">Promotions</h2>
+    <Depliable titre="Promotions">
       <p className="text-[15px] text-[#5a6366]">
         Une remise en % sur le prix estimé. Sans code, elle s&apos;applique toute seule aux courses concernées ; avec un code, le client le saisit sur le site. Si plusieurs remises conviennent, la plus forte s&apos;applique.
       </p>
@@ -158,6 +158,6 @@ export default function Promotions() {
       ) : (
         <button type="button" onClick={() => setForm({ ...VIDE })} className="min-h-[52px] rounded-xl bg-soft font-bold text-pri">+ Nouvelle promotion</button>
       )}
-    </section>
+    </Depliable>
   );
 }

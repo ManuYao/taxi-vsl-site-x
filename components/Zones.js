@@ -76,7 +76,7 @@ export default function Zones() {
   return (
     <section id="zones" className="scroll-mt-4 py-16 sm:py-[88px]">
       <Container className="grid items-center gap-9 min-[960px]:grid-cols-[1.25fr_.75fr] min-[960px]:gap-14">
-        <div className="min-w-0 rounded-[28px] bg-white p-3">
+        <div className="reveal min-w-0 rounded-[28px] bg-white p-3">
           <Carte />
         </div>
         <div>
@@ -87,7 +87,7 @@ export default function Zones() {
           </SectionHead>
           <div className="flex flex-col gap-3">
             {dests.map((d) => (
-              <div key={d.nom} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5">
+              <div key={d.nom} className="reveal carte-fx flex items-center justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5">
                 <b className="text-lg">{d.nom}</b>
                 <span className="whitespace-nowrap tabular-nums text-[#5a6366]">{d.dist}</span>
               </div>
@@ -99,7 +99,7 @@ export default function Zones() {
         <ul aria-label="Communes desservies" className="mt-9 flex list-none flex-wrap gap-2 p-0">
           {site.communes.map((c) => (
             <li key={c.nom}>
-              <Link prefetch={false} href={`/taxi/${slugCommune(c.nom)}`} className="inline-flex min-h-11 items-center rounded-full bg-white px-4 py-2 text-base text-ink no-underline hover:bg-soft">
+              <Link prefetch={false} href={`/taxi/${slugCommune(c.nom)}`} className="fx inline-flex min-h-11 items-center rounded-full bg-white px-4 py-2 text-base text-ink no-underline hover:bg-soft">
                 {c.nom}
               </Link>
             </li>

@@ -20,7 +20,7 @@ export default function Faq() {
         <SectionHead eyebrow="Questions" title="Avant de réserver" center />
         <div className="mx-auto flex max-w-[760px] flex-col gap-3">
           {questions.map(({ q, r, tbd }) => (
-            <details key={q} className="group rounded-[18px] bg-white">
+            <details key={q} className="reveal carte-fx group rounded-[18px] bg-white">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-[22px] py-5 text-[19px] font-bold [&::-webkit-details-marker]:hidden">
                 {q}
                 <span aria-hidden="true" className="flex size-[34px] flex-none items-center justify-center rounded-full bg-soft text-[22px] text-pri">

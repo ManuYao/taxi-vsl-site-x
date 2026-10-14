@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
+import Depliable from "./Depliable";
 
 const champ =
   "w-full min-h-14 rounded-[14px] bg-bg px-4 py-3 text-lg tabular-nums shadow-[inset_0_0_0_1.5px_#e2e6e3] focus:outline-none focus:shadow-[inset_0_0_0_2px_var(--pri),0_0_0_4px_var(--soft)]";
@@ -61,8 +62,7 @@ export default function MonSite() {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-[18px] bg-white p-4">
-      <h2 className="font-title text-lg font-bold">Mes tarifs</h2>
+    <Depliable titre="Mes tarifs" ouvertParDefaut>
       <p className="text-[15px] text-[#5a6366]">
         Ils servent à calculer le prix estimé que voient les clients avant de réserver. Le prix final reste celui du taximètre.
       </p>
@@ -88,6 +88,6 @@ export default function MonSite() {
         </form>
       )}
       {valeurs === null && message && <p role="alert" className="text-[15px] font-bold text-[#b3261e]">{message.texte}</p>}
-    </section>
+    </Depliable>
   );
 }

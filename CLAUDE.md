@@ -105,12 +105,12 @@ site.config.js            nom, téléphone, WhatsApp, couleurs, villes, tarifs p
 - **Netlify** : variables d'environnement à importer depuis `.env.local` ; variable `SECRETS_SCAN_OMIT_KEYS` pour les clés publiques `NEXT_PUBLIC_*` ; ne publier que la branche de production pour économiser les crédits.
 - Les tests automatiques sont dans `lib/*.test.js` (`node --test lib/*.test.js`).
 
-## À faire plus tard : style et effets (PAS maintenant)
+## Style et effets (commencé le 14/10/2026)
+- Fait : fond en points, effets des boutons (classes `.fx`, `.fx-pri`, `.fx-contour`, `.fx-halo`, `.fx-sonne`), apparition au défilement en CSS seul (`.reveal`, `animation-timeline: view()`), cartes qui se soulèvent (`.carte-fx`), voiture et bulles du héros animées. Tout est coupé avec `prefers-reduced-motion`.
 - Quand le fonctionnel est terminé, on reprendra le style et on ajoutera des effets.
 - **Espace chauffeur, onglet Appli** : donner un fond coloré différent aux sections (Disponibilité, Notifications, Mes tarifs, Promotions, Équipe…), un vert de la palette avec beaucoup de transparence, pour séparer les blocs et casser le « trop blanc ».
-- **Onglet Appli : sections dépliables** : chaque section (Mon compte, Disponibilité, Notifications, Mes tarifs, Promotions, Équipe, Installation…) devient un menu repliable (comme le tuto d'installation, déjà fait avec `<details>`), pour que la page ne soit pas trop longue. Le contenu reste tel quel. Avec le style : un fond un peu plus foncé une section sur deux, qui change selon que la section est ouverte ou fermée (code couleur discret), plus un moyen de tout replier d'un coup.
-- **Arrière-plans** : l'utilisateur veut un fond « cool » en motif CSS, à générer avec https://www.magicpattern.design/tools/css-backgrounds (aux couleurs de la palette vert forêt, discret pour garder la lisibilité : public âgé, fort contraste). À essayer sur le site public et l'espace chauffeur.
-- Ne pas le faire tant que l'utilisateur ne le demande pas.
+- **Onglet Appli : sections dépliables (FAIT)** : composant `components/admin/Depliable.js` (`<details>`). Ouvertes par défaut : Disponibilité, Mes tarifs, Équipe. Les autres (Mon compte, Notifications, Promotions, Installation…) sont repliées. Reste à faire : fonds colorés discrets (un vert très transparent, un peu plus foncé une section sur deux ou selon ouvert/fermé) et un bouton « tout replier ».
+- **Arrière-plans (FAIT sur le site public)** : petits points verts à 16 % dans `app/globals.css` (`body`). À régler si trop ou pas assez visibles ; à essayer aussi sur l'espace chauffeur.
 
 ## Infos à obtenir du client
 Nom commercial · numéro et WhatsApp (actuel : 06 52 44 60 68) · site, fiche Google ou Facebook existants · logo, couleurs, photos du véhicule · services réellement proposés · zone et horaires · tarif au km, prise en charge, minimum, tarifs nuit/week-end · conventionnement CPAM · associés et organisation · iPhone ou Android pour les notifications.

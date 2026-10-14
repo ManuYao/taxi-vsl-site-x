@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabaseNavigateur } from "@/lib/supabase-browser";
 import { usePush } from "./usePush";
+import Depliable from "./Depliable";
 
 const jeton = async () => (await supabaseNavigateur().auth.getSession()).data.session?.access_token ?? null;
 const bouton = "min-h-[52px] w-full rounded-xl px-4 font-bold disabled:opacity-60";
@@ -32,8 +33,7 @@ export default function BlocNotifications() {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-[18px] bg-white p-4">
-      <h2 className="font-title text-lg font-bold">Notifications</h2>
+    <Depliable titre="Notifications">
 
       {etat === "inconnu" && <p className="text-[#5a6366]">Vérification…</p>}
 
@@ -81,6 +81,6 @@ export default function BlocNotifications() {
 
       {erreur && <p role="alert" className="text-[15px] font-bold text-[#b3261e]">{erreur}</p>}
       {essai && <p role="status" className={`text-[15px] font-bold ${essai.ton === "ok" ? "text-pri" : "text-[#b3261e]"}`}>{essai.texte}</p>}
-    </section>
+    </Depliable>
   );
 }

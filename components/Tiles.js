@@ -15,7 +15,7 @@ export default function Tiles() {
         {tuiles.map(({ Icon, titre, texte, fort, tbd }) => (
           <div
             key={titre}
-            className={`flex min-w-0 flex-col gap-1.5 rounded-[18px] p-5 shadow-[0_14px_34px_-24px_rgba(15,25,20,.5)] ${
+            className={`carte-fx flex min-w-0 flex-col gap-1.5 rounded-[18px] p-5 shadow-[0_14px_34px_-24px_rgba(15,25,20,.5)] ${
               fort ? "bg-pri text-white" : "bg-white"
             }`}
           >

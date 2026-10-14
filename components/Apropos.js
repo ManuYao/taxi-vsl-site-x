@@ -38,7 +38,7 @@ export default function Apropos() {
   return (
     <section id="nous" className="scroll-mt-4 pb-16 sm:pb-[88px]">
       <Container className="grid items-center gap-9 min-[900px]:grid-cols-2 min-[900px]:gap-16">
-        <div className="overflow-hidden rounded-[28px] bg-soft">
+        <div className="reveal overflow-hidden rounded-[28px] bg-soft">
           <Scene />
         </div>
         <div className="flex min-w-0 flex-col gap-4">

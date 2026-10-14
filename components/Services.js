@@ -112,7 +112,7 @@ export default function Services() {
         <SectionHead eyebrow="Services" title="Où que vous alliez" center />
         <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
           {services.map(({ Dessin, titre, texte }) => (
-            <article key={titre} className="flex min-w-0 flex-col overflow-hidden rounded-3xl bg-white transition hover:-translate-y-1 hover:shadow-[0_24px_40px_-28px_rgba(15,25,20,.55)]">
+            <article key={titre} className="reveal carte-fx flex min-w-0 flex-col overflow-hidden rounded-3xl bg-white">
               <Dessin />
               <div className="flex flex-col gap-1.5 px-[22px] pt-5 pb-6">
                 <h3 className="text-[22px] font-bold">{titre}</h3>
