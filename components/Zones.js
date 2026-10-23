@@ -5,9 +5,11 @@ import { Container, SectionHead } from "./ui";
 
 const L = 560;
 const H = 400;
-// Projection simple : la carte couvre ~0,38° de longitude sur ~0,22° de latitude autour de la base.
-const X = (lon) => ((lon - 2.6) / 0.38) * L;
-const Y = (lat) => ((48.12 - lat) / 0.22) * H;
+// Projection à l'échelle, centrée sur la base : ECHELLE pixels par km, donc le cercle en pointillés vaut vraiment `rayonKm`.
+const ECHELLE = 9.5;
+const KM_PAR_DEGRE = 111.32;
+const X = (lon) => L / 2 + (lon - site.base.lon) * Math.cos((site.base.lat * Math.PI) / 180) * KM_PAR_DEGRE * ECHELLE;
+const Y = (lat) => H / 2 - (lat - site.base.lat) * KM_PAR_DEGRE * ECHELLE;
 
 function km(a, b) {
   const t = Math.PI / 180;
@@ -29,7 +31,7 @@ function Carte() {
       <rect width={L} height={H} rx="20" fill="#F3F5F3" />
       <path d="M0 300 C 120 270, 200 330, 330 300 S 500 250, 560 280" stroke="#DDE3DE" strokeWidth="10" fill="none" />
       <path d="M220 0 C 210 90, 190 160, 200 230 S 230 340, 240 400" stroke="#CFE0EA" strokeWidth="6" fill="none" />
-      <circle cx={mx} cy={my} r="132" fill="var(--soft)" stroke="var(--pri)" strokeWidth="2" strokeDasharray="6 6" />
+      <circle cx={mx} cy={my} r={carte.rayonKm * ECHELLE} fill="var(--soft)" stroke="var(--pri)" strokeWidth="2" strokeDasharray="6 6" />
       {carte.lointaines.map(([nom, x, y]) => (
         <line key={nom} x1={mx} y1={my} x2={x} y2={y} stroke="var(--pri)" strokeWidth="2" strokeDasharray="2 6" strokeLinecap="round" opacity=".7" />
       ))}

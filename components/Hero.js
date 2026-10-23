@@ -6,7 +6,7 @@ import { PhoneIcon, CheckIcon, PlusIcon } from "./Icons";
 const badges = ["Conventionné CPAM", "Sans compte", "Prix affiché avant"];
 
 export default function Hero() {
-  const communes = site.communes.filter((c) => c.nom !== site.base.ville).slice(0, 5).map((c) => c.nom);
+  const communes = site.communesVedettes ?? site.communes.filter((c) => c.nom !== site.base.ville).slice(0, 5).map((c) => c.nom);
 
   return (
     <section className="overflow-hidden pt-6 pb-14">

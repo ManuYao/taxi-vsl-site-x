@@ -100,7 +100,7 @@ function Longue() {
 
 export default function Services() {
   const services = [
-    { Dessin: Local, titre: "Taxi local", texte: `Courses dans ${site.base.ville} et l'agglo.` },
+    { Dessin: Local, titre: "Taxi local", texte: `Courses dans ${site.base.ville} et les environs.` },
     { Dessin: Medical, titre: "Médical et VSL", texte: "Hôpital, dialyse, rééducation." },
     { Dessin: Gares, titre: "Gares et aéroports", texte: `${site.base.ville}, Orly, Roissy-CDG.` },
     { Dessin: Longue, titre: "Longue distance", texte: "Toute la France, arrêts possibles." },

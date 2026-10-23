@@ -14,7 +14,7 @@ const panneau =
 
 const MIN_CARACTERES = 3;
 const ANTI_REBOND_MS = 250;
-const PROCHE = { lat: site.base.lat, lon: site.base.lon, departement: site.base.departement };
+const PROCHE = { lat: site.base.lat, lon: site.base.lon, departement: site.departements.map((d) => d.code).join(",") }; // ex. "77,45"
 
 const trait = {
   viewBox: "0 0 24 24",

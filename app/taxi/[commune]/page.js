@@ -44,16 +44,10 @@ export default async function PageCommune({ params }) {
   if (!commune) notFound();
 
   // Distances par la route (estimées) vers les destinations les plus demandées : propres à chaque commune
-  const vers = (nom) => site.destinations.find((d) => d.nom === nom);
-  const trajets = [
-    ["Gare de Montargis", "à la gare de Montargis"],
-    ["Hôpital", "à l'hôpital"],
-    ["Orly", "à l'aéroport d'Orly"],
-    ["Roissy-CDG", "à l'aéroport Roissy-CDG"],
-  ]
-    .map(([nom, libelle]) => ({ lieu: vers(nom), libelle }))
-    .filter((t) => t.lieu)
-    .map((t) => ({ libelle: t.libelle, distance: distanceLisible(kmRoute(commune, t.lieu)) }));
+  // (les destinations qui ont une `phrase` dans site.config.js)
+  const trajets = site.destinations
+    .filter((d) => d.phrase)
+    .map((d) => ({ libelle: d.phrase, distance: distanceLisible(kmRoute(commune, d)) }));
   const proches = voisines(site.communes, commune, 6);
   const estBase = commune.nom === site.base.ville;
 
