@@ -135,3 +135,6 @@ Nom commercial · numéro et WhatsApp (actuel : 06 52 44 60 68) · site, fiche G
 
 ## Commandes
 - `npm run dev` · `npm run build` · `npm run lint`
+
+Ajout à faire Urgent  : 
+ajouter un effect de transparence car le look est bien trop générique et voir la police d'écrture  
