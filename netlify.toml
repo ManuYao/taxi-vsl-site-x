@@ -1,0 +1,6 @@
+# Les clés listées ici ne sont pas des secrets : leurs valeurs finissent volontairement dans le site.
+# - NEXT_PUBLIC_* : clés publiques envoyées au navigateur.
+# - ALERT_EMAIL : même adresse que site.legal.conceptionEmail, affichée dans les mentions légales.
+# Cette valeur remplace celle du tableau de bord Netlify : ajouter ici toute nouvelle clé publique.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_VAPID_PUBLIC_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_TURNSTILE_SITE_KEY,ALERT_EMAIL"
