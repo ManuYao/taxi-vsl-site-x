@@ -61,14 +61,38 @@ export default function TimePicker({ today, maintenant, date, hour, minute, onCh
   const [ouvert, setOuvert] = useState(false);
   const [periode, setPeriode] = useState(periodeDe(hour));
   const [minutesVisibles, setMinutesVisibles] = useState(false);
+  const [saisieH, setSaisieH] = useState("");
+  const [saisieM, setSaisieM] = useState("");
+  const [erreur, setErreur] = useState("");
+  const [perso, setPerso] = useState(false);
 
   const aujourdhui = !permettrePasse && sameDay(date, today);
   const p = PERIODES[periode];
+
+  function validerPerso() {
+    const h = Number(saisieH);
+    const m = Number(saisieM || 0);
+    if (saisieH === "" || !Number.isInteger(h) || h < 0 || h > 23 || !Number.isInteger(m) || m < 0 || m > 59) {
+      setErreur("Entrez une heure de 0 à 23 et des minutes de 0 à 59.");
+      return;
+    }
+    if (aujourdhui && h <= maintenant) {
+      setErreur("Cette heure est déjà passée.");
+      return;
+    }
+    setErreur("");
+    onChange(h, m);
+    setOuvert(false);
+  }
 
   function basculer() {
     if (!ouvert) {
       setPeriode(periodeDe(hour));
       setMinutesVisibles(false);
+      setSaisieH("");
+      setSaisieM("");
+      setErreur("");
+      setPerso(false);
     }
     setOuvert(!ouvert);
   }
@@ -147,6 +171,18 @@ export default function TimePicker({ today, maintenant, date, hour, minute, onCh
                 {h} h
               </button>
             ))}
+            <button
+              type="button"
+              aria-expanded={perso}
+              aria-controls="heure-perso"
+              onClick={() => {
+                setPerso(!perso);
+                setErreur("");
+              }}
+              className={`min-h-14 px-0.5 text-base leading-tight ${caseBase} ${perso ? caseOn : "text-pri"}`}
+            >
+              Autre heure
+            </button>
           </div>
 
           {minutesVisibles && (
@@ -170,6 +206,59 @@ export default function TimePicker({ today, maintenant, date, hour, minute, onCh
                 ))}
               </div>
             </div>
+          )}
+
+          {perso && (
+          // div et non form : ce composant est déjà dans le formulaire de réservation (les formulaires imbriqués sont invalides)
+          <div
+            id="heure-perso"
+            className="flex flex-col gap-2 border-t border-[#e2e6e3] pt-3"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                validerPerso();
+              }
+            }}
+          >
+            <span className="text-[15px] font-bold text-[#5a6366]">Tapez l'heure exacte</span>
+            <div className="flex items-end gap-2">
+              <label className="flex flex-1 flex-col gap-1 text-sm font-bold">
+                Heure
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
+                  autoComplete="off"
+                  placeholder="21"
+                  value={saisieH}
+                  onChange={(e) => setSaisieH(e.target.value.replace(/\D/g, ""))}
+                  className="min-h-14 w-full rounded-xl bg-white text-center text-xl font-bold tabular-nums shadow-[inset_0_0_0_1.5px_#e2e6e3]"
+                />
+              </label>
+              <span className="pb-3 text-2xl font-extrabold" aria-hidden="true">:</span>
+              <label className="flex flex-1 flex-col gap-1 text-sm font-bold">
+                Minutes
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
+                  autoComplete="off"
+                  placeholder="10"
+                  value={saisieM}
+                  onChange={(e) => setSaisieM(e.target.value.replace(/\D/g, ""))}
+                  className="min-h-14 w-full rounded-xl bg-white text-center text-xl font-bold tabular-nums shadow-[inset_0_0_0_1.5px_#e2e6e3]"
+                />
+              </label>
+              <button type="button" onClick={validerPerso} className="min-h-14 rounded-xl bg-pri px-5 text-lg font-bold text-white hover:bg-pri-hover">
+                OK
+              </button>
+            </div>
+            {erreur && (
+              <p role="alert" className="text-[15px] font-bold text-red-700">
+                {erreur}
+              </p>
+            )}
+          </div>
           )}
         </div>
       )}
